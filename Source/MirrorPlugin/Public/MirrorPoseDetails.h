@@ -10,7 +10,7 @@
 
 
 
-class FIcarusMirrorPoseDataDetails : public IDetailCustomization
+class FMirrorPoseDataDetails : public IDetailCustomization
 {
 public:
 	
@@ -45,7 +45,7 @@ private:
 
 	void OnSelection(TSharedPtr<FString> Option, ESelectInfo::Type);
 
-	bool CheckSkeletonSelected(UIcarusMirrorPoseData*& OuterInstance, USkeleton*& Skeleton);
+	bool CheckSkeletonSelected(UMirrorPoseData*& OuterInstance, USkeleton*& Skeleton);
 
 private:
 
@@ -84,7 +84,7 @@ private:
 
 	void LOnSelection(TSharedPtr<FString> Option, ESelectInfo::Type);
 
-	bool CheckSkeletonSelected(UIcarusMirrorPoseData*& OuterInstance, USkeleton*& Skeleton);
+	bool CheckSkeletonSelected(UMirrorPoseData*& OuterInstance, USkeleton*& Skeleton);
 
 private:
 

@@ -1,8 +1,8 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "Animation/MirrorPose/IcarusMirrorHelpers.h"
+#include "MirrorPlugin/MirrorHelpers.h"
 
-void IcarusMirrorHelpers::SingleBoneMirror(FSingleBoneMirror BoneRules, FVector BasePoseLocation, FRotator BasePoseRotation, FVector FramePoseLocation, FRotator FramePoseRotation, FVector & LocationResult, FRotator & RotationResult)
+void MirrorHelpers::SingleBoneMirror(FSingleBoneMirror BoneRules, FVector BasePoseLocation, FRotator BasePoseRotation, FVector FramePoseLocation, FRotator FramePoseRotation, FVector & LocationResult, FRotator & RotationResult)
 {
 	FramePoseLocation.X = (BoneRules.LocationX) ? FramePoseLocation.X*-1.0f : FramePoseLocation.X;
 	FramePoseLocation.Y = (BoneRules.LocationY) ? FramePoseLocation.Y*-1.0f : FramePoseLocation.Y;
@@ -18,7 +18,7 @@ void IcarusMirrorHelpers::SingleBoneMirror(FSingleBoneMirror BoneRules, FVector 
 	RotationResult = DifferencePoseRotation + BasePoseRotation;
 }
 
-void IcarusMirrorHelpers::DoubleBoneRotationMirror(FDoubleBoneMirror BoneRules, FRotator L_BasePoseRotation, FRotator R_BasePoseRotation, FRotator L_FramePoseRotation, FRotator R_FramePoseRotation, FRotator & L_RotationResult, FRotator & R_RotationResult)
+void MirrorHelpers::DoubleBoneRotationMirror(FDoubleBoneMirror BoneRules, FRotator L_BasePoseRotation, FRotator R_BasePoseRotation, FRotator L_FramePoseRotation, FRotator R_FramePoseRotation, FRotator & L_RotationResult, FRotator & R_RotationResult)
 {
 	FRotator L_DifferencePoseRotation = L_FramePoseRotation - L_BasePoseRotation;
 	FRotator R_DifferencePoseRotation = R_FramePoseRotation - R_BasePoseRotation;
@@ -36,7 +36,7 @@ void IcarusMirrorHelpers::DoubleBoneRotationMirror(FDoubleBoneMirror BoneRules, 
 
 }
 
-void IcarusMirrorHelpers::SingleTrackMirror(FRawAnimSequenceTrack& Track, FTransform BaseBoneTransform, FSingleBoneMirror TrackRules)
+void MirrorHelpers::SingleTrackMirror(FRawAnimSequenceTrack& Track, FTransform BaseBoneTransform, FSingleBoneMirror TrackRules)
 {
 	for (int ip = 0; ip < Track.PosKeys.Num(); ip++)
 	{
@@ -59,7 +59,7 @@ void IcarusMirrorHelpers::SingleTrackMirror(FRawAnimSequenceTrack& Track, FTrans
 	}
 }
 
-void IcarusMirrorHelpers::DoubleTrackMirror(FRawAnimSequenceTrack& L_Track, FTransform L_BaseBoneTransform, FRawAnimSequenceTrack& R_Track, FTransform R_BaseBoneTransform, FDoubleBoneMirror TrackRules)
+void MirrorHelpers::DoubleTrackMirror(FRawAnimSequenceTrack& L_Track, FTransform L_BaseBoneTransform, FRawAnimSequenceTrack& R_Track, FTransform R_BaseBoneTransform, FDoubleBoneMirror TrackRules)
 {
 	int32 L_Track_Num = L_Track.RotKeys.Num();
 	int32 R_Track_Num = R_Track.RotKeys.Num();
@@ -100,7 +100,7 @@ void IcarusMirrorHelpers::DoubleTrackMirror(FRawAnimSequenceTrack& L_Track, FTra
 		FRotator L_FinalPoseRotation, R_FinalPoseRotation;
 
 
-		IcarusMirrorHelpers::DoubleBoneRotationMirror(TrackRules, L_BasePoseRotation, R_BasePoseRotation, L_CurrentPoseRotation, R_CurrentPoseRotation, L_FinalPoseRotation, R_FinalPoseRotation);
+		MirrorHelpers::DoubleBoneRotationMirror(TrackRules, L_BasePoseRotation, R_BasePoseRotation, L_CurrentPoseRotation, R_CurrentPoseRotation, L_FinalPoseRotation, R_FinalPoseRotation);
 	
 		L_Track.RotKeys[ir] = L_FinalPoseRotation.Quaternion();
 		R_Track.RotKeys[ir] = R_FinalPoseRotation.Quaternion();

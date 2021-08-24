@@ -1,5 +1,5 @@
 #if WITH_EDITOR
-#include "Animation/MirrorPose/IcarusMirrorPoseDetails.h"
+#include "MirrorPlugin/MirrorPoseDetails.h"
 #include "Runtime/Core/Public/Modules/ModuleManager.h"
 #include "Editor/PropertyEditor/Public/PropertyEditorModule.h"
 #include "Editor/PropertyEditor/Public/DetailWidgetRow.h"
@@ -9,7 +9,7 @@
 #include "Runtime/Slate/Public/Widgets/Input/SCheckBox.h"
 #include "Editor/PropertyEditor/Public/IDetailPropertyRow.h"
 #include "Runtime/Slate/Public/Widgets/Input/SComboBox.h"
-#include "Animation/AnimInstance.h"
+#include "AnimInstance.h"
 #include "Runtime/SlateCore/Public/Widgets/SBoxPanel.h"
 #include "PropertyCustomizationHelpers.h"
 #include "Runtime/UMG/Public/Components/ComboBoxString.h"
@@ -19,7 +19,7 @@
 #include "Editor/ContentBrowser/Public/ContentBrowserModule.h"
 #include "Runtime/Core/Public/Misc/MessageDialog.h"
 #include "Developer/AssetTools/Public/AssetToolsModule.h"
-#include "Animation/MirrorPose/IcarusMirrorPoseData.h"
+#include "MirrorPlugin/MirrorPoseData.h"
 
 
 
@@ -39,7 +39,7 @@ namespace AnimSequence_MirrorMenu
 			}
 			else
 			{
-				UIcarusMirrorPoseData* PoseData = Cast<UIcarusMirrorPoseData>(AnimSequence_MirrorMenu::SelectedPoseData->GetAsset());
+				UMirrorPoseData* PoseData = Cast<UMirrorPoseData>(AnimSequence_MirrorMenu::SelectedPoseData->GetAsset());
 				UAnimSequence* AnimSequence = Cast<UAnimSequence>(SelectedAssets.GetAsset());
 				if (PoseData && AnimSequence)
 				{
@@ -51,7 +51,7 @@ namespace AnimSequence_MirrorMenu
 					UObject* NewDuplicatedObject = AssetTools->Get().DuplicateAsset((SelectedAssets.AssetName).ToString() + "_Mirror", SelectedAssets.PackagePath.ToString(), AnimSequence);
 					
 					UAnimSequence* NewAnimSequence = Cast<UAnimSequence>(NewDuplicatedObject);
-					UIcarusMirrorPoseData::ProcessMirrorTrack(PoseData, NewAnimSequence);
+					UMirrorPoseData::ProcessMirrorTrack(PoseData, NewAnimSequence);
 				}	
 			}
 		}
@@ -81,7 +81,7 @@ namespace AnimSequence_MirrorMenu
 		TSharedRef<SWidget> Selector = PropertyCustomizationHelpers::MakeAssetPickerWithMenu(
 		FAssetData(),
 		false,
-		TArray<const UClass*>{UIcarusMirrorPoseData::StaticClass()},
+		TArray<const UClass*>{UMirrorPoseData::StaticClass()},
 		TArray<UFactory*>{},
 		FOnShouldFilterAsset(),
 		FOnAssetSelected::CreateStatic(&AnimSequence_MirrorMenu::SelectedAssetOnPicker),
@@ -148,9 +148,9 @@ namespace AnimSequence_MirrorMenu
 };
 
 
-struct FUIcarus_Details_Inicialization
+struct FU_Details_Inicialization
 {
-	FUIcarus_Details_Inicialization()
+	FU_Details_Inicialization()
 	{
 		/* CASO SEJA IMPLEMENTADO EM OUTRO PROJETO, LEMBRAR DE REGISTRAR A CUSTOMIZACAO, COMO ABAIXO, EM ALGUMA CLASSE CONSTRUTORA QUE NAO SE REPITA,
 		OU DEIXAR AQUI MESMO, USANDO UMA INSTANCIA EXECUTADA DE UMA STRUCT STATICA*/
@@ -167,13 +167,13 @@ struct FUIcarus_Details_Inicialization
 
 			PropertyModule.RegisterCustomPropertyTypeLayout("SingleBoneMirror", FOnGetPropertyTypeCustomizationInstance::CreateStatic(&FSingleBoneMirrorCustomization::MakeInstance));
 			PropertyModule.RegisterCustomPropertyTypeLayout("DoubleBoneMirror", FOnGetPropertyTypeCustomizationInstance::CreateStatic(&FDoubleBoneMirrorCustomization::MakeInstance));
-			PropertyModule.RegisterCustomClassLayout("IcarusMirrorPoseData", FOnGetDetailCustomizationInstance::CreateStatic(&FIcarusMirrorPoseDataDetails::MakeInstance));
+			PropertyModule.RegisterCustomClassLayout("MirrorPoseData", FOnGetDetailCustomizationInstance::CreateStatic(&FMirrorPoseDataDetails::MakeInstance));
 			PropertyModule.NotifyCustomizationModuleChanged();
 		}
 	}
 };
 
-static FUIcarus_Details_Inicialization ConstructorInstance;
+static FU_Details_Inicialization ConstructorInstance;
 
 
 /* --------------------------------------------------------------------------------------------- */
@@ -183,22 +183,22 @@ static FUIcarus_Details_Inicialization ConstructorInstance;
 
 /* --------------------------------------------------------------------------------------------- */
 
-TSharedRef<IDetailCustomization> FIcarusMirrorPoseDataDetails::MakeInstance()
+TSharedRef<IDetailCustomization> FMirrorPoseDataDetails::MakeInstance()
 {
-	return MakeShareable(new FIcarusMirrorPoseDataDetails);
+	return MakeShareable(new FMirrorPoseDataDetails);
 }
 
-TSharedRef<SWidget> FIcarusMirrorPoseDataDetails::MakeOption(TSharedPtr<FString> Option)
+TSharedRef<SWidget> FMirrorPoseDataDetails::MakeOption(TSharedPtr<FString> Option)
 {
 	return SNew(STextBlock).Text(FText::FromString(*Option));
 }
 
-void FIcarusMirrorPoseDataDetails::OnSelection(TSharedPtr<FString> Option, ESelectInfo::Type)
+void FMirrorPoseDataDetails::OnSelection(TSharedPtr<FString> Option, ESelectInfo::Type)
 {
 	if (!Option.IsValid()) return;
 	TArray<TWeakObjectPtr<UObject>> OutObjects;
 	Builder->GetObjectsBeingCustomized(OutObjects);
-	UIcarusMirrorPoseData* Object = Cast<UIcarusMirrorPoseData>(OutObjects[0]);
+	UMirrorPoseData* Object = Cast<UMirrorPoseData>(OutObjects[0]);
 	Object->RootBoneName = *Option;
 	CurrentSelectItem = Option;
 	/* ------------------------------------------------- */
@@ -227,7 +227,7 @@ void FIcarusMirrorPoseDataDetails::OnSelection(TSharedPtr<FString> Option, ESele
 	Builder->ForceRefreshDetails();
 }
 
-FText FIcarusMirrorPoseDataDetails::GetCurrentItem() const
+FText FMirrorPoseDataDetails::GetCurrentItem() const
 {
 	if (CurrentSelectItem.IsValid())
 	{
@@ -239,7 +239,7 @@ FText FIcarusMirrorPoseDataDetails::GetCurrentItem() const
 	}
 }
 
-void FIcarusMirrorPoseDataDetails::CustomizeDetails(IDetailLayoutBuilder& DetailBuilder)
+void FMirrorPoseDataDetails::CustomizeDetails(IDetailLayoutBuilder& DetailBuilder)
 {
 	Builder = &DetailBuilder;
 	UObject* SelectedSkeleton;
@@ -278,12 +278,12 @@ void FIcarusMirrorPoseDataDetails::CustomizeDetails(IDetailLayoutBuilder& Detail
 		[
 			SNew(SComboBox<TSharedPtr<FString>>)
 			.OptionsSource(&Options)
-			.OnGenerateWidget(this, &FIcarusMirrorPoseDataDetails::MakeOption)
-			.OnSelectionChanged(this, &FIcarusMirrorPoseDataDetails::OnSelection)
+			.OnGenerateWidget(this, &FMirrorPoseDataDetails::MakeOption)
+			.OnSelectionChanged(this, &FMirrorPoseDataDetails::OnSelection)
 			.InitiallySelectedItem(CurrentSelectItem)
 			[
 				SNew(STextBlock)
-				.Text(this, &FIcarusMirrorPoseDataDetails::GetCurrentItem)
+				.Text(this, &FMirrorPoseDataDetails::GetCurrentItem)
 			]
 		];
 	}
@@ -345,11 +345,11 @@ FText FSingleBoneMirrorCustomization::GetCurrentItem() const
 	}
 }
 
-bool FSingleBoneMirrorCustomization::CheckSkeletonSelected(UIcarusMirrorPoseData*& OuterInstance, USkeleton*& Skeleton)
+bool FSingleBoneMirrorCustomization::CheckSkeletonSelected(UMirrorPoseData*& OuterInstance, USkeleton*& Skeleton)
 {
 	TArray<UObject*> OuterObjects;
 	StructHandle->GetOuterObjects(OuterObjects);
-	OuterInstance = Cast<UIcarusMirrorPoseData>(OuterObjects[0]);
+	OuterInstance = Cast<UMirrorPoseData>(OuterObjects[0]);
 
 	if (OuterInstance)
 	{
@@ -363,7 +363,7 @@ void FSingleBoneMirrorCustomization::CustomizeHeader(TSharedRef<class IPropertyH
 {
 	StructHandle = StructPropertyHandle;
 
-	UIcarusMirrorPoseData* OuterInstance;
+	UMirrorPoseData* OuterInstance;
 	USkeleton* TargetSkeleton;
 	if (!CheckSkeletonSelected(OuterInstance, TargetSkeleton)) return;
 
@@ -391,7 +391,7 @@ void FSingleBoneMirrorCustomization::CustomizeChildren(TSharedRef<class IPropert
 {
 	Builder = &StructBuilder;
 
-	UIcarusMirrorPoseData* OuterInstance;
+	UMirrorPoseData* OuterInstance;
 	USkeleton* TargetSkeleton;
 
 	if (!CheckSkeletonSelected(OuterInstance, TargetSkeleton)) return;
@@ -569,11 +569,11 @@ FText FDoubleBoneMirrorCustomization::LGetCurrentItem() const
 	}
 }
 
-bool FDoubleBoneMirrorCustomization::CheckSkeletonSelected(UIcarusMirrorPoseData*& OuterInstance, USkeleton*& Skeleton)
+bool FDoubleBoneMirrorCustomization::CheckSkeletonSelected(UMirrorPoseData*& OuterInstance, USkeleton*& Skeleton)
 {
 	TArray<UObject*> OuterObjects;
 	StructHandle->GetOuterObjects(OuterObjects);
-	OuterInstance = Cast<UIcarusMirrorPoseData>(OuterObjects[0]);
+	OuterInstance = Cast<UMirrorPoseData>(OuterObjects[0]);
 
 	if (OuterInstance)
 	{
@@ -587,7 +587,7 @@ void FDoubleBoneMirrorCustomization::CustomizeHeader(TSharedRef<class IPropertyH
 {
 	StructHandle = StructPropertyHandle;
 
-	UIcarusMirrorPoseData* OuterInstance;
+	UMirrorPoseData* OuterInstance;
 	USkeleton* TargetSkeleton;
 	if (!CheckSkeletonSelected(OuterInstance, TargetSkeleton)) return;
 
@@ -620,7 +620,7 @@ void FDoubleBoneMirrorCustomization::CustomizeChildren(TSharedRef<class IPropert
 {
 	Builder = &StructBuilder;
 
-	UIcarusMirrorPoseData* OuterInstance;
+	UMirrorPoseData* OuterInstance;
 	USkeleton* TargetSkeleton;
 
 	if (!CheckSkeletonSelected(OuterInstance, TargetSkeleton)) return;

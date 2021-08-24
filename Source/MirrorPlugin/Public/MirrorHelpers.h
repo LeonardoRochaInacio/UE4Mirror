@@ -4,17 +4,17 @@
 
 #include "CoreMinimal.h"
 #include "Runtime/Engine/Classes/Animation/AnimSequence.h"
-#include "IcarusMirrorPoseData.h"
+#include "MirrorPoseData.h"
 
 /**
  * 
  */
-class ICARUSEDITOR_API IcarusMirrorHelpers
+class EDITOR_API MirrorHelpers
 {
 private:
 
-	IcarusMirrorHelpers() {};
-	~IcarusMirrorHelpers() {};
+	MirrorHelpers() {};
+	~MirrorHelpers() {};
 
 public:
 

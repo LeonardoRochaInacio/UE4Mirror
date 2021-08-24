@@ -3,16 +3,16 @@
 
 #include "CoreMinimal.h"
 #include "Factories/Factory.h"
-#include "IcarusMirrorPoseDataFactory.generated.h"
+#include "MirrorPoseDataFactory.generated.h"
 
 UCLASS()
-class ICARUSEDITOR_API UIcarusMirrorPoseDataFactory : public UFactory
+class EDITOR_API UMirrorPoseDataFactory : public UFactory
 {
 	GENERATED_BODY()
 
 public:
 
-	UIcarusMirrorPoseDataFactory();
+	UMirrorPoseDataFactory();
 
 	virtual UObject* FactoryCreateNew(UClass* InClass, UObject* InParent, FName InName, EObjectFlags Flags, UObject* Context, FFeedbackContext* Warn) override;
 

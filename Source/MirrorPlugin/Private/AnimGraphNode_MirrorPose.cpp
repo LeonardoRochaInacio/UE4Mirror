@@ -1,7 +1,7 @@
-#include "Animation/MirrorPose/AnimGraphNode_MirrorPose.h"
+#include "MirrorPlugin/AnimGraphNode_MirrorPose.h"
 #include "AnimationRuntime.h"
 #include "Animation/AnimInstanceProxy.h"
-#include "Animation/MirrorPose/IcarusMirrorHelpers.h"
+#include "MirrorPlugin/MirrorHelpers.h"
 #include "BonePose.h"
 
 // ---------------------------------------------------------------------------------- 
@@ -43,7 +43,7 @@ void FAnimNode_MirrorPose::Evaluate_AnyThread(FPoseContext &Context)
 			FVector LocationResult;
 			FRotator RotationResult;
 
-			IcarusMirrorHelpers::SingleBoneMirror(SBoneMirror, BasePoseLocation, BasePoseRotation, CurrentPoseLocation, CurrentPoseRotation, LocationResult, RotationResult);
+			MirrorHelpers::SingleBoneMirror(SBoneMirror, BasePoseLocation, BasePoseRotation, CurrentPoseLocation, CurrentPoseRotation, LocationResult, RotationResult);
 
 			Context.Pose[BoneIndex].SetLocation(LocationResult);
 			Context.Pose[BoneIndex].SetRotation(RotationResult.Quaternion());
@@ -60,7 +60,7 @@ void FAnimNode_MirrorPose::Evaluate_AnyThread(FPoseContext &Context)
 			FRotator R_CurrentPoseRotation = Context.Pose[R_BoneIndex].GetRotation().Rotator();
 			FRotator L_FinalPoseRotation, R_FinalPoseRotation;
 
-			IcarusMirrorHelpers::DoubleBoneRotationMirror(DBoneMirror, L_BasePoseRotation, R_BasePoseRotation, L_CurrentPoseRotation, R_CurrentPoseRotation, L_FinalPoseRotation, R_FinalPoseRotation);
+			MirrorHelpers::DoubleBoneRotationMirror(DBoneMirror, L_BasePoseRotation, R_BasePoseRotation, L_CurrentPoseRotation, R_CurrentPoseRotation, L_FinalPoseRotation, R_FinalPoseRotation);
 
 			Context.Pose[R_BoneIndex].SetRotation(R_FinalPoseRotation.Quaternion());
 			Context.Pose[L_BoneIndex].SetRotation(L_FinalPoseRotation.Quaternion());

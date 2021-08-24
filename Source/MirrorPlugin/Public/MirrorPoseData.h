@@ -5,10 +5,10 @@
 #include "CoreMinimal.h"
 #include "UObject/NoExportTypes.h"
 #include "Runtime/Engine/Classes/Animation/Skeleton.h"
-#include "IcarusMirrorPoseData.generated.h"
+#include "MirrorPoseData.generated.h"
 
 USTRUCT(BlueprintType)
-struct ICARUSEDITOR_API FSingleBoneMirror
+struct EDITOR_API FSingleBoneMirror
 {
 	GENERATED_USTRUCT_BODY()
 
@@ -37,7 +37,7 @@ struct ICARUSEDITOR_API FSingleBoneMirror
 };
 
 USTRUCT(BlueprintType)
-struct ICARUSEDITOR_API FDoubleBoneMirror
+struct EDITOR_API FDoubleBoneMirror
 {
 	GENERATED_USTRUCT_BODY()
 
@@ -70,12 +70,12 @@ struct ICARUSEDITOR_API FDoubleBoneMirror
 };
 
 /**
- * Icarus mirror pose asset
+ *  mirror pose asset
  */
 
 
 UCLASS(BlueprintType)
-class ICARUSEDITOR_API UIcarusMirrorPoseData : public UObject
+class EDITOR_API UMirrorPoseData : public UObject
 {
 	GENERATED_BODY()
 	
@@ -99,6 +99,6 @@ public:
 
 public:
 
-	static void ProcessMirrorTrack(const UIcarusMirrorPoseData* DataPose, UAnimSequence* AnimSequence);
+	static void ProcessMirrorTrack(const UMirrorPoseData* DataPose, UAnimSequence* AnimSequence);
 
 };

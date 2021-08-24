@@ -2,12 +2,12 @@
 
 #include "AnimGraphNode_Base.h"
 #include "Runtime/UMG/Public/Components/ComboBoxString.h"
-#include "IcarusMirrorPoseData.h"
+#include "MirrorPoseData.h"
 #include "CoreUObject.h"
 #include "AnimGraphNode_MirrorPose.generated.h"
 
 USTRUCT(BlueprintType)
-struct ICARUSEDITOR_API FAnimNode_MirrorPose : public FAnimNode_Base
+struct EDITOR_API FAnimNode_MirrorPose : public FAnimNode_Base
 {
 
 	GENERATED_USTRUCT_BODY()
@@ -20,7 +20,7 @@ public:
 	FPoseLink CurrentPose;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Settings, meta = (PinShownByDefault))
-	UIcarusMirrorPoseData* MirrorPoseAsset;
+	UMirrorPoseData* MirrorPoseAsset;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Settings, meta = (PinShownByDefault))
 	bool bMirrorRootBoneTranslation = false;
@@ -42,7 +42,7 @@ private:
 // ---------------------------------------------------------------------------- 
 
 UCLASS(BlueprintType)
-class ICARUSEDITOR_API UAnimGraphNode_MirrorPose : public UAnimGraphNode_Base
+class EDITOR_API UAnimGraphNode_MirrorPose : public UAnimGraphNode_Base
 {
 	GENERATED_BODY()
 
