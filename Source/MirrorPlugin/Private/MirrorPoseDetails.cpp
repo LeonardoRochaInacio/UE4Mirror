@@ -203,7 +203,7 @@ void FMirrorPoseDataDetails::OnSelection(TSharedPtr<FString> Option, ESelectInfo
 	CurrentSelectItem = Option;
 	/* ------------------------------------------------- */
 	// Create Package	
-	UAnimSequence* AnimSequenceObject = Object->xx; 
+	/*UAnimSequence* AnimSequenceObject = Object->xx; 
 
 	if (!AnimSequenceObject) return;
 	TSet<UPackage*> ReturnedPackage;
@@ -221,7 +221,7 @@ void FMirrorPoseDataDetails::OnSelection(TSharedPtr<FString> Option, ESelectInfo
 	NewAnimSequence->GetRawAnimationTrack(0).PosKeys[4].Set(500.0f, 0.0f, 200.0f);
 	NewAnimSequence->GetRawAnimationTrack(0).PosKeys[5].Set(500.0f, 0.0f, 200.0f);
 
-	NewAnimSequence->CompressRawAnimData();
+	NewAnimSequence->CompressRawAnimData();*/
 	
 	/* ------------------------------------------------- */
 	Builder->ForceRefreshDetails();

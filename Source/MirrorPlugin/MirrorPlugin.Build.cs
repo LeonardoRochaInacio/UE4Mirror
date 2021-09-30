@@ -27,6 +27,10 @@ public class MirrorPlugin : ModuleRules
 			new string[]
 			{
 				"Core",
+				"CoreUObject", 
+				"Engine", 
+				"InputCore", 
+				"AssetTools"
 				// ... add other public dependencies that you statically link with here ...
 			}
 			);
@@ -44,7 +48,8 @@ public class MirrorPlugin : ModuleRules
 				"BlueprintGraph",
 				"EditorStyle",
 				"InputCore",
-				"PropertyEditor"
+				"PropertyEditor",
+				"Projects"
 				// ... add private dependencies that you statically link with here ...	
 			}
 			);

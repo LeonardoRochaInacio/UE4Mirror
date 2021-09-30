@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Modules/ModuleManager.h"
+#include "Styling/SlateStyle.h"
 
 class FMirrorPluginModule : public IModuleInterface
 {
@@ -12,4 +13,6 @@ public:
 	/** IModuleInterface implementation */
 	virtual void StartupModule() override;
 	virtual void ShutdownModule() override;
+
+	TSharedPtr<FSlateStyleSet> Style;
 };
