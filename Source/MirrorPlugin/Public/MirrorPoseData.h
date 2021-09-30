@@ -82,8 +82,8 @@ class MIRRORPLUGIN_API UMirrorPoseData : public UObject
 public:
 
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = SkeletonSettings)
-	UAnimSequence* xx;
+	/*UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = SkeletonSettings)
+	UAnimSequence* xx;*/
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = SkeletonSettings)
 	USkeleton* Skeleton;
