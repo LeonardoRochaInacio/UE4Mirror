@@ -1,7 +1,7 @@
 #if WITH_EDITOR
 
-#include "MirrorPlugin/MirrorPoseDataFactory.h"
-#include "MirrorPlugin/MirrorPoseData.h"
+#include "MirrorPoseDataFactory.h"
+#include "MirrorPoseData.h"
 #include "Developer/AssetTools/Public/AssetTypeCategories.h"
 
 UMirrorPoseDataFactory::UMirrorPoseDataFactory()

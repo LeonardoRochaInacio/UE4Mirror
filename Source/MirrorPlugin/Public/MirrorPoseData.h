@@ -8,7 +8,7 @@
 #include "MirrorPoseData.generated.h"
 
 USTRUCT(BlueprintType)
-struct EDITOR_API FSingleBoneMirror
+struct MIRRORPLUGIN_API FSingleBoneMirror
 {
 	GENERATED_USTRUCT_BODY()
 
@@ -37,7 +37,7 @@ struct EDITOR_API FSingleBoneMirror
 };
 
 USTRUCT(BlueprintType)
-struct EDITOR_API FDoubleBoneMirror
+struct MIRRORPLUGIN_API FDoubleBoneMirror
 {
 	GENERATED_USTRUCT_BODY()
 
@@ -75,7 +75,7 @@ struct EDITOR_API FDoubleBoneMirror
 
 
 UCLASS(BlueprintType)
-class EDITOR_API UMirrorPoseData : public UObject
+class MIRRORPLUGIN_API UMirrorPoseData : public UObject
 {
 	GENERATED_BODY()
 	

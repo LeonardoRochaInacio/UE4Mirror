@@ -6,6 +6,7 @@ public class MirrorPlugin : ModuleRules
 {
 	public MirrorPlugin(ReadOnlyTargetRules Target) : base(Target)
 	{
+		DefaultBuildSettings = BuildSettingsVersion.V2;
 		PCHUsage = ModuleRules.PCHUsageMode.UseExplicitOrSharedPCHs;
 		
 		PublicIncludePaths.AddRange(
@@ -38,6 +39,9 @@ public class MirrorPlugin : ModuleRules
 				"Engine",
 				"Slate",
 				"SlateCore",
+				"AnimGraph",
+				"UnrealEd",
+				"BlueprintGraph"
 				// ... add private dependencies that you statically link with here ...	
 			}
 			);

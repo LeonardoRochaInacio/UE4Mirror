@@ -3,13 +3,12 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Runtime/Engine/Classes/Animation/AnimSequence.h"
 #include "MirrorPoseData.h"
 
 /**
  * 
  */
-class EDITOR_API MirrorHelpers
+class MIRRORPLUGIN_API MirrorHelpers
 {
 private:
 

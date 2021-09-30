@@ -1,5 +1,5 @@
 #if WITH_EDITOR
-#include "MirrorPlugin/MirrorPoseDetails.h"
+#include "MirrorPoseDetails.h"
 #include "Runtime/Core/Public/Modules/ModuleManager.h"
 #include "Editor/PropertyEditor/Public/PropertyEditorModule.h"
 #include "Editor/PropertyEditor/Public/DetailWidgetRow.h"
@@ -9,7 +9,7 @@
 #include "Runtime/Slate/Public/Widgets/Input/SCheckBox.h"
 #include "Editor/PropertyEditor/Public/IDetailPropertyRow.h"
 #include "Runtime/Slate/Public/Widgets/Input/SComboBox.h"
-#include "AnimInstance.h"
+#include "Animation/AnimInstance.h"
 #include "Runtime/SlateCore/Public/Widgets/SBoxPanel.h"
 #include "PropertyCustomizationHelpers.h"
 #include "Runtime/UMG/Public/Components/ComboBoxString.h"
@@ -19,7 +19,7 @@
 #include "Editor/ContentBrowser/Public/ContentBrowserModule.h"
 #include "Runtime/Core/Public/Misc/MessageDialog.h"
 #include "Developer/AssetTools/Public/AssetToolsModule.h"
-#include "MirrorPlugin/MirrorPoseData.h"
+#include "MirrorPoseData.h"
 
 
 

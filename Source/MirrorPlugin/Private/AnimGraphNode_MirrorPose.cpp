@@ -1,7 +1,8 @@
-#include "MirrorPlugin/AnimGraphNode_MirrorPose.h"
+#include "AnimGraphNode_MirrorPose.h"
+#include "AnimGraphNode_MirrorPose.h"
 #include "AnimationRuntime.h"
 #include "Animation/AnimInstanceProxy.h"
-#include "MirrorPlugin/MirrorHelpers.h"
+#include "MirrorHelpers.h"
 #include "BonePose.h"
 
 // ---------------------------------------------------------------------------------- 

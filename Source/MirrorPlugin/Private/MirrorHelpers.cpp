@@ -1,6 +1,6 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "MirrorPlugin/MirrorHelpers.h"
+#include "MirrorHelpers.h"
 
 void MirrorHelpers::SingleBoneMirror(FSingleBoneMirror BoneRules, FVector BasePoseLocation, FRotator BasePoseRotation, FVector FramePoseLocation, FRotator FramePoseRotation, FVector & LocationResult, FRotator & RotationResult)
 {

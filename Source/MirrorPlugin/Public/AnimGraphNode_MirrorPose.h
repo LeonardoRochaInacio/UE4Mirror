@@ -1,13 +1,13 @@
 #pragma once
 
-#include "AnimGraphNode_Base.h"
+#include "AnimGraph/Classes/AnimGraphNode_Base.h"
 #include "Runtime/UMG/Public/Components/ComboBoxString.h"
 #include "MirrorPoseData.h"
 #include "CoreUObject.h"
 #include "AnimGraphNode_MirrorPose.generated.h"
 
 USTRUCT(BlueprintType)
-struct EDITOR_API FAnimNode_MirrorPose : public FAnimNode_Base
+struct MIRRORPLUGIN_API FAnimNode_MirrorPose : public FAnimNode_Base
 {
 
 	GENERATED_USTRUCT_BODY()
@@ -42,7 +42,7 @@ private:
 // ---------------------------------------------------------------------------- 
 
 UCLASS(BlueprintType)
-class EDITOR_API UAnimGraphNode_MirrorPose : public UAnimGraphNode_Base
+class MIRRORPLUGIN_API UAnimGraphNode_MirrorPose : public UAnimGraphNode_Base
 {
 	GENERATED_BODY()
 

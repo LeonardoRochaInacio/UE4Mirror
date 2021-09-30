@@ -1,8 +1,8 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "MirrorPlugin/MirrorPoseData.h"
+#include "MirrorPoseData.h"
 #include "Runtime/Engine/Classes/Animation/AnimSequence.h"
-#include "MirrorPlugin/MirrorHelpers.h"
+#include "MirrorHelpers.h"
 
 void UMirrorPoseData::ProcessMirrorTrack(const UMirrorPoseData* DataPose, UAnimSequence* AnimSequence)
 {

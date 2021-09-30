@@ -6,7 +6,7 @@
 #include "MirrorPoseDataFactory.generated.h"
 
 UCLASS()
-class EDITOR_API UMirrorPoseDataFactory : public UFactory
+class MIRRORPLUGIN_API UMirrorPoseDataFactory : public UFactory
 {
 	GENERATED_BODY()
 
