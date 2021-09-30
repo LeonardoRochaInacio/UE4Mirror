@@ -41,7 +41,10 @@ public class MirrorPlugin : ModuleRules
 				"SlateCore",
 				"AnimGraph",
 				"UnrealEd",
-				"BlueprintGraph"
+				"BlueprintGraph",
+				"EditorStyle",
+				"InputCore",
+				"PropertyEditor"
 				// ... add private dependencies that you statically link with here ...	
 			}
 			);
