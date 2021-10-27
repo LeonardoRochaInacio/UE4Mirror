@@ -13,5 +13,7 @@ UCLASS()
 class MIRRORPLUGIN_API UMirrorPosePlaneViewportComponent : public UStaticMeshComponent
 {
 	GENERATED_BODY()
+
+	UMirrorPosePlaneViewportComponent(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 	
 };

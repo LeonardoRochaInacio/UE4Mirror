@@ -8,7 +8,9 @@
 #include "Animation/DebugSkelMeshComponent.h"
 #include "AnimPreviewInstance.h"
 #include "EditorViewportClient.h"
+#include "MirrorPosePlaneViewportComponent.h"
 #include "Settings/SkeletalMeshEditorSettings.h"
+#include "UObject/ConstructorHelpers.h"
 
 /**
  * 
@@ -71,10 +73,7 @@ public:
 		DrawHelper.GridColorMinor = FColor(0, 0, 0);
 		DrawHelper.PerspectiveGridSize = HALF_WORLD_MAX1;
 		DrawHelper.AxesLineThickness = 3.0f;
-		bDisableInput = true;
-
-		
-
+		bDisableInput = false;
 	}
 
 
@@ -106,6 +105,5 @@ public:
 		PreviewScene->SetLightDirection(Options->AnimPreviewLightingDirection);
 		PreviewScene->SetLightColor(Options->AnimPreviewDirectionalColor);
 		PreviewScene->SetLightBrightness(Options->AnimPreviewLightBrightness);
-		//GetScene()->AddPrimitive();
 	}
 };
