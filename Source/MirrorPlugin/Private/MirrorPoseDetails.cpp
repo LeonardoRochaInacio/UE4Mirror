@@ -20,6 +20,7 @@
 #include "Runtime/Core/Public/Misc/MessageDialog.h"
 #include "Developer/AssetTools/Public/AssetToolsModule.h"
 #include "MirrorPoseData.h"
+#include "SPlaneViewport.h"
 
 
 
@@ -239,16 +240,46 @@ FText FMirrorPoseDataDetails::GetCurrentItem() const
 	}
 }
 
+void FMirrorPoseDataDetails::GenerateViewportPlane(IDetailLayoutBuilder& DetailBuilder, USkeleton* SelectedSkeleton)
+{
+	IDetailCategoryBuilder& VisualEditorMirrorSelector = DetailBuilder.EditCategory("Mirror Plane Setup");
+	const FText FilterString = FText::FromString(TEXT("Visual Editor Mirror Selector"));
+	FDetailWidgetRow& VisualEditorMirrorRow = VisualEditorMirrorSelector.AddCustomRow(FilterString);
+
+	TSharedPtr<SPlaneViewport> TargetViewport;
+	VisualEditorMirrorRow.WholeRowContent()
+	[
+		SNew(SHorizontalBox)
+		+ SHorizontalBox::Slot()
+		[
+			SNew(SVerticalBox)
+			+ SVerticalBox::Slot()
+			.Padding(10.0f)
+			.AutoHeight()
+			[
+				SNew(SBox).MaxAspectRatio(FOptionalSize(1.8f))
+				[
+					SNew(SPlaneViewport).Skeleton(Cast<USkeleton>(SelectedSkeleton))
+				]
+			]
+		]
+	];
+
+	
+	
+}
+
 void FMirrorPoseDataDetails::CustomizeDetails(IDetailLayoutBuilder& DetailBuilder)
 {
-	Builder = &DetailBuilder;
+	//Builder = &DetailBuilder;
 	UObject* SelectedSkeleton;
-	
 	DetailBuilder.GetProperty("Skeleton")->GetValue(SelectedSkeleton);
 	DetailBuilder.GetProperty("Skeleton")->SetOnPropertyValueChanged(FSimpleDelegate::CreateLambda([&]() { DetailBuilder.ForceRefreshDetails(); }));
 
 	if (SelectedSkeleton)
 	{
+		GenerateViewportPlane(DetailBuilder, Cast<USkeleton>(SelectedSkeleton));
+		
 		USkeleton* Skeleton = Cast<USkeleton>(SelectedSkeleton);
 		IDetailCategoryBuilder& CategoryBuilder = DetailBuilder.EditCategory("GeneralSettings");
 		FDetailWidgetRow& RootBoneNameRow = CategoryBuilder.AddProperty("RootBoneName").CustomWidget();

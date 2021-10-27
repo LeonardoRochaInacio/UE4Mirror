@@ -27,7 +27,12 @@ public:
 	void OnSelection(TSharedPtr<FString> Option, ESelectInfo::Type);
 
 	static TSharedRef<IDetailCustomization> MakeInstance();
+	
 	virtual void CustomizeDetails(IDetailLayoutBuilder& DetailBuilder) override;
+
+private:
+
+	void GenerateViewportPlane(IDetailLayoutBuilder& DetailBuilder, USkeleton* SelectedSkeleton);
 };
 
 /* --------------------------------------------------------------------------------------------- */
