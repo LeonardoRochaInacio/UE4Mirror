@@ -73,7 +73,6 @@ bool SPlaneViewport::IsVisible() const
 TSharedRef<FEditorViewportClient> SPlaneViewport::MakeEditorViewportClient()
 {
 	EditorViewportClient = MakeShareable(new FPlaneViewportClient(PreviewScene, SharedThis(this)));
-
 	EditorViewportClient->ViewportType = LVT_Perspective;
 	EditorViewportClient->bSetListenerPosition = false;
 	EditorViewportClient->SetViewLocation(EditorViewportDefs::DefaultPerspectiveViewLocation);

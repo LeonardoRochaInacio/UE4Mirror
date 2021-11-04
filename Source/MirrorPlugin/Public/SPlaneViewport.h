@@ -90,8 +90,7 @@ public:
 	{
 		if (PreviewScene)
 		{
-			PreviewScene->GetWorld()->Tick(LEVELTICK_All, DeltaTime);
-			TargetSkeleton->bDrawSockets = true;
+			PreviewScene->GetWorld()->Tick(LEVELTICK_All, DeltaTime);	
 			float ImportBoundsSphereRadius = TargetSkeleton->SkeletalMesh->GetImportedBounds().SphereRadius;
 			FVector RootLocation = TargetSkeleton->GetBoneLocation(TargetSkeleton->GetBoneName(1));
 			SetViewRotation(GetViewRotation() + FRotator(0.0f, DeltaTime*20.0f, 0.0f));
