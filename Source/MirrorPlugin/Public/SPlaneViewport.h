@@ -12,6 +12,10 @@
 #include "Settings/SkeletalMeshEditorSettings.h"
 #include "UObject/ConstructorHelpers.h"
 
+//forward declaration para FPlaneViewportClient
+
+class FPlaneViewportClient;
+
 /**
  * 
  */
@@ -22,8 +26,8 @@ public:
 	{}
 
 	SLATE_ARGUMENT(USkeleton*, Skeleton)
-	SLATE_END_ARGS()
-
+	SLATE_END_ARGS()		
+	
 public:
 	
 	SPlaneViewport();
@@ -37,6 +41,8 @@ protected:
 	virtual TSharedPtr<SWidget> MakeViewportToolbar() override;
 
 private:
+
+	TSharedPtr<FPlaneViewportClient> EditorViewportClient;
 	
 	/** Skeleton */
 	USkeleton* TargetSkeleton;
@@ -52,6 +58,9 @@ private:
 class FPlaneViewportClient : public FEditorViewportClient
 {
 public:
+
+	UDebugSkelMeshComponent* TargetSkeleton;
+	
 	FPlaneViewportClient(FPreviewScene& InPreviewScene, const TSharedRef<SPlaneViewport>& InBasePoseViewport)
 		: FEditorViewportClient(nullptr, &InPreviewScene, StaticCastSharedRef<SEditorViewport>(InBasePoseViewport))
 	{
@@ -73,9 +82,8 @@ public:
 		DrawHelper.GridColorMinor = FColor(0, 0, 0);
 		DrawHelper.PerspectiveGridSize = HALF_WORLD_MAX1;
 		DrawHelper.AxesLineThickness = 3.0f;
-		bDisableInput = false;
+		bDisableInput = true;
 	}
-
 
 	// FEditorViewportClient interface
 	virtual void Tick(float DeltaTime) override
@@ -83,6 +91,12 @@ public:
 		if (PreviewScene)
 		{
 			PreviewScene->GetWorld()->Tick(LEVELTICK_All, DeltaTime);
+			TargetSkeleton->bDrawSockets = true;
+			float ImportBoundsSphereRadius = TargetSkeleton->SkeletalMesh->GetImportedBounds().SphereRadius;
+			FVector RootLocation = TargetSkeleton->GetBoneLocation(TargetSkeleton->GetBoneName(1));
+			SetViewRotation(GetViewRotation() + FRotator(0.0f, DeltaTime*20.0f, 0.0f));
+			SetViewLocationForOrbiting(RootLocation, ImportBoundsSphereRadius*1.2f);
+			Invalidate();
 		}
 	}
 

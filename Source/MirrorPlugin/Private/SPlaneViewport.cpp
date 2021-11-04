@@ -10,7 +10,7 @@ void SPlaneViewport::Construct(const FArguments& InArgs)
 	PreviewComponent = NewObject<UDebugSkelMeshComponent>();
 	PreviewComponent->VisibilityBasedAnimTickOption = EVisibilityBasedAnimTickOption::AlwaysTickPoseAndRefreshBones;
 	PreviewScene.AddComponent(PreviewComponent, FTransform::Identity);
-	
+	EditorViewportClient->TargetSkeleton = PreviewComponent;
 	SetSkeleton(InArgs._Skeleton);
 
 	UMirrorPosePlaneViewportComponent* VisualMirrorPlane = NewObject<UMirrorPosePlaneViewportComponent>(GetWorld(), "VisualMirrorPlane");
@@ -19,7 +19,7 @@ void SPlaneViewport::Construct(const FArguments& InArgs)
 	{
 		VisualMirrorPlane->SetWorldScale3D(FVector(100.0f));
 		FTransform VisualMirrorPlaneTransform;
-		VisualMirrorPlaneTransform.SetRotation(FRotator(90.0f, 90.0f, 0.0f).Quaternion());
+		VisualMirrorPlaneTransform.SetRotation(FRotator(90.0f, 0.0f, 0.0f).Quaternion());
 		const float PreviewMeshSphereRadius = InArgs._Skeleton->GetPreviewMesh()->GetImportedBounds().SphereRadius;
 		const float PlaneSize = 256.0f;
 		const float PlaneScale = ((PreviewMeshSphereRadius * 2) / PlaneSize) + 2;
@@ -42,17 +42,9 @@ void SPlaneViewport::SetSkeleton(USkeleton* Skeleton)
 			{
 				PreviewComponent->SetSkeletalMesh(PreviewSkeletalMesh);
 				PreviewComponent->EnablePreview(true, nullptr);
-				//				PreviewComponent->AnimScriptInstance = PreviewComponent->PreviewInstance;
+				//PreviewComponent->AnimScriptInstance = PreviewComponent->PreviewInstance;
 				PreviewComponent->PreviewInstance->SetForceRetargetBasePose(true);
 				PreviewComponent->RefreshBoneTransforms(nullptr);
-
-
-				FVector NewPosition = Client->GetViewLocation();
-				NewPosition.Normalize();
-				float ImportBoundsSphereRadius = PreviewSkeletalMesh->GetImportedBounds().SphereRadius;
-				NewPosition *= (ImportBoundsSphereRadius * 1.2f);
-				NewPosition += FVector(0.0f, 0.0f, ImportBoundsSphereRadius * 0.25f);
-				Client->SetViewLocation(NewPosition);
 			}
 			else
 			{
@@ -80,13 +72,12 @@ bool SPlaneViewport::IsVisible() const
 
 TSharedRef<FEditorViewportClient> SPlaneViewport::MakeEditorViewportClient()
 {
-	TSharedPtr<FEditorViewportClient> EditorViewportClient = MakeShareable(new FPlaneViewportClient(PreviewScene, SharedThis(this)));
+	EditorViewportClient = MakeShareable(new FPlaneViewportClient(PreviewScene, SharedThis(this)));
 
 	EditorViewportClient->ViewportType = LVT_Perspective;
 	EditorViewportClient->bSetListenerPosition = false;
 	EditorViewportClient->SetViewLocation(EditorViewportDefs::DefaultPerspectiveViewLocation);
 	EditorViewportClient->SetViewRotation(EditorViewportDefs::DefaultPerspectiveViewRotation);
-
 	EditorViewportClient->SetRealtime(false);
 	EditorViewportClient->VisibilityDelegate.BindSP(this, &SPlaneViewport::IsVisible);
 	EditorViewportClient->SetViewMode(VMI_Lit);
