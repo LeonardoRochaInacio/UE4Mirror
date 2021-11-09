@@ -4,9 +4,8 @@
 #include "Editor/PropertyEditor/Public/IPropertyTypeCustomization.h"
 #include "Editor/PropertyEditor/Public/IDetailCustomization.h"
 #include "Runtime/SlateCore/Public/Widgets/SWidget.h"
-#include "AssetTypeActions_Base.h"
-#include "Runtime/Slate/Public/Framework/MultiBox/MultiBoxBuilder.h"
 #include "AnimGraphNode_MirrorPose.h"
+#include "SPlaneViewport.h"
 
 
 
@@ -33,6 +32,12 @@ public:
 private:
 
 	void GenerateViewportPlane(IDetailLayoutBuilder& DetailBuilder, USkeleton* SelectedSkeleton);
+
+	const TSharedRef<SBox> GenerateViewportPlaneControls();
+	
+	void ViewportPlaneControl_SliderAction(float NewValue);
+
+	TSharedPtr<SPlaneViewport> PlaneViewport;
 };
 
 /* --------------------------------------------------------------------------------------------- */

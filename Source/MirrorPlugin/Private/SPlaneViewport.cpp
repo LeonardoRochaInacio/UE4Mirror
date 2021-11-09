@@ -13,7 +13,7 @@ void SPlaneViewport::Construct(const FArguments& InArgs)
 	EditorViewportClient->TargetSkeleton = PreviewComponent;
 	SetSkeleton(InArgs._Skeleton);
 
-	UMirrorPosePlaneViewportComponent* VisualMirrorPlane = NewObject<UMirrorPosePlaneViewportComponent>(GetWorld(), "VisualMirrorPlane");
+	VisualMirrorPlane = NewObject<UMirrorPosePlaneViewportComponent>(GetWorld(), "VisualMirrorPlane");
 
 	if (VisualMirrorPlane->IsValidLowLevel())
 	{
@@ -68,6 +68,11 @@ SPlaneViewport::SPlaneViewport()
 bool SPlaneViewport::IsVisible() const
 {
 	return true;
+}
+
+UMirrorPosePlaneViewportComponent* SPlaneViewport::GetVisualMirrorPlane() const
+{
+	return VisualMirrorPlane;
 }
 
 TSharedRef<FEditorViewportClient> SPlaneViewport::MakeEditorViewportClient()

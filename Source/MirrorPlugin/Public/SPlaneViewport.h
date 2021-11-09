@@ -24,7 +24,7 @@ class MIRRORPLUGIN_API SPlaneViewport : public /*SCompoundWidget*/SEditorViewpor
 public:
 	SLATE_BEGIN_ARGS(SPlaneViewport)
 	{}
-
+	
 	SLATE_ARGUMENT(USkeleton*, Skeleton)
 	SLATE_END_ARGS()		
 	
@@ -33,7 +33,10 @@ public:
 	SPlaneViewport();
 
 	void Construct(const FArguments& InArgs);
+
 	void SetSkeleton(USkeleton* Skeleton);
+
+	UMirrorPosePlaneViewportComponent* GetVisualMirrorPlane() const;
 
 protected:
 	/** SEditorViewport interface */
@@ -52,6 +55,8 @@ private:
 	class UDebugSkelMeshComponent* PreviewComponent;
 
 	bool IsVisible() const override;
+
+	UMirrorPosePlaneViewportComponent* VisualMirrorPlane;
 };
 
 
@@ -94,7 +99,7 @@ public:
 			float ImportBoundsSphereRadius = TargetSkeleton->SkeletalMesh->GetImportedBounds().SphereRadius;
 			FVector RootLocation = TargetSkeleton->GetBoneLocation(TargetSkeleton->GetBoneName(1));
 			SetViewRotation(GetViewRotation() + FRotator(0.0f, DeltaTime*20.0f, 0.0f));
-			SetViewLocationForOrbiting(RootLocation, ImportBoundsSphereRadius*1.2f);
+			SetViewLocationForOrbiting(RootLocation, ImportBoundsSphereRadius*1.4f);
 			Invalidate();
 		}
 	}

@@ -20,7 +20,8 @@
 #include "Runtime/Core/Public/Misc/MessageDialog.h"
 #include "Developer/AssetTools/Public/AssetToolsModule.h"
 #include "MirrorPoseData.h"
-#include "SPlaneViewport.h"
+#include "Widgets/Input/SSlider.h"
+#include "Widgets/Input/SSpinBox.h"
 
 
 
@@ -246,26 +247,101 @@ void FMirrorPoseDataDetails::GenerateViewportPlane(IDetailLayoutBuilder& DetailB
 	const FText FilterString = FText::FromString(TEXT("Visual Editor Mirror Selector"));
 	FDetailWidgetRow& VisualEditorMirrorRow = VisualEditorMirrorSelector.AddCustomRow(FilterString);
 
-	TSharedPtr<SPlaneViewport> TargetViewport;
+	const float PlaneViewportWidth = 550.0f;
+	const float WholeViewportSize = 700.0f;
 	VisualEditorMirrorRow.WholeRowContent()
 	[
-		SNew(SHorizontalBox)
-		+ SHorizontalBox::Slot()
+		SNew(SBox)
+		.HAlign(EHorizontalAlignment::HAlign_Center)
+		//.MinDesiredWidth(WholeViewportSize)
+		//.Padding(FMargin(-WholeViewportSize/2.0f, 0.0f, 0.0f, 0.0f))
 		[
-			SNew(SVerticalBox)
-			+ SVerticalBox::Slot()
-			.Padding(10.0f)
-			.AutoHeight()
+			SNew(SHorizontalBox)
+			+ SHorizontalBox::Slot()
+		        .AutoWidth()
 			[
-				SNew(SBox).MaxAspectRatio(FOptionalSize(1.8f))
+				SNew(SVerticalBox)
+				+ SVerticalBox::Slot()
+				.Padding(10.0f)
+				.AutoHeight()
 				[
-					SNew(SPlaneViewport).Skeleton(Cast<USkeleton>(SelectedSkeleton))
+					SNew(SBox).WidthOverride(PlaneViewportWidth)
+					[
+						SAssignNew(PlaneViewport, SPlaneViewport).Skeleton(Cast<USkeleton>(SelectedSkeleton))
+					]
 				]
 			]
+			+ SHorizontalBox::Slot()
+			.Padding(10.0f)
+			.AutoWidth()
+			[
+			    GenerateViewportPlaneControls()
+			]
 		]
+		
 	];
+}
 
-	
+
+const TSharedRef<SBox> FMirrorPoseDataDetails::GenerateViewportPlaneControls()
+{
+	const FOnFloatValueChanged OnValueChangedHandle = FOnFloatValueChanged::CreateRaw(this, &FMirrorPoseDataDetails::ViewportPlaneControl_SliderAction);
+	return SNew(SBox).WidthOverride(100.0f)
+		[
+			SNew(SHorizontalBox)
+			+ SHorizontalBox::Slot()
+		        .AutoWidth()
+		        .Padding(5.0f)
+		        [
+			  SNew(SVerticalBox)
+			  + SVerticalBox::Slot()
+		          .AutoHeight()
+		          .Padding(FMargin(0.0f, 0.0f, 0.0f, 8.0f))
+		          .VAlign(EVerticalAlignment::VAlign_Bottom)
+		          [
+			    SNew(STextBlock).Text(FText::FromString("Mirror Plane Angle"))
+		          ]
+	                  + SVerticalBox::Slot()
+		          .AutoHeight()
+			  .Padding(FMargin(0.0f, 0.0f, 0.0f, 8.0f))
+			  .VAlign(EVerticalAlignment::VAlign_Bottom)
+		          [
+			    SNew(STextBlock).Text(FText::FromString("Central Bones Acceptance"))
+		          ]
+			]
+	                + SHorizontalBox::Slot()
+			.AutoWidth()
+			.Padding(5.0f)
+		        [
+			  SNew(SVerticalBox)
+			  + SVerticalBox::Slot()
+			  .AutoHeight()
+			  .Padding(FMargin(0.0f, 0.0f, 0.0f, 5.0f))
+			  .VAlign(EVerticalAlignment::VAlign_Center)
+			  [
+				  SNew(SSpinBox<float>)
+				  .MaxValue(360.0f)
+				  .MinValue(0.0f)
+				  .MinDesiredWidth(100.0f)
+				  .OnValueChanged(FOnFloatValueChanged::CreateRaw(this, &FMirrorPoseDataDetails::ViewportPlaneControl_SliderAction))
+			  ]
+			  + SVerticalBox::Slot()
+			  .AutoHeight()
+			  .Padding(FMargin(0.0f, 0.0f, 0.0f, 5.0f))
+			  .VAlign(EVerticalAlignment::VAlign_Center)
+			  [
+				  SNew(SSpinBox<float>).MaxValue(50.0f).MinValue(0.0f).MinDesiredWidth(100.0f)
+			  ]
+		        ]
+		];
+}
+
+void FMirrorPoseDataDetails::ViewportPlaneControl_SliderAction(float NewValue)
+{
+	if(PlaneViewport.IsValid())
+	{
+		PlaneViewport->GetVisualMirrorPlane()->SetRelativeRotation(FRotator(90.0f, 0.0f, 0.0f) + FRotator(0.0f, NewValue, 0.0f));
+	}
 	
 }
 
