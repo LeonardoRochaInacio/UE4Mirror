@@ -330,7 +330,8 @@ const TSharedRef<SBox> FMirrorPoseDataDetails::GenerateViewportPlaneControls()
 			  .Padding(FMargin(0.0f, 0.0f, 0.0f, 5.0f))
 			  .VAlign(EVerticalAlignment::VAlign_Center)
 			  [
-				  SNew(SSpinBox<float>).MaxValue(50.0f).MinValue(0.0f).MinDesiredWidth(100.0f)
+				  SNew(SSpinBox<float>).MaxValue(50.0f
+				  ).MinValue(0.0f).MinDesiredWidth(100.0f)
 			  ]
 		        ]
 		];

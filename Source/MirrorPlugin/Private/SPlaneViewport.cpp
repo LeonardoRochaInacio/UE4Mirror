@@ -20,7 +20,7 @@ void SPlaneViewport::Construct(const FArguments& InArgs)
 		VisualMirrorPlane->SetWorldScale3D(FVector(100.0f));
 		FTransform VisualMirrorPlaneTransform;
 		VisualMirrorPlaneTransform.SetRotation(FRotator(90.0f, 0.0f, 0.0f).Quaternion());
-		const float PreviewMeshSphereRadius = InArgs._Skeleton->GetPreviewMesh()->GetImportedBounds().SphereRadius;
+		const float PreviewMeshSphereRadius = InArgs._Skeleton->GetPreviewMesh(true)->GetImportedBounds().SphereRadius;
 		const float PlaneSize = 256.0f;
 		const float PlaneScale = ((PreviewMeshSphereRadius * 2) / PlaneSize) + 2;
 		VisualMirrorPlaneTransform.SetScale3D(FVector(PlaneScale));
@@ -37,7 +37,7 @@ void SPlaneViewport::SetSkeleton(USkeleton* Skeleton)
 
 		if (TargetSkeleton)
 		{
-			USkeletalMesh* PreviewSkeletalMesh = Skeleton->GetPreviewMesh();
+			USkeletalMesh* PreviewSkeletalMesh = Skeleton->GetPreviewMesh(true);
 			if (PreviewSkeletalMesh)
 			{
 				PreviewComponent->SetSkeletalMesh(PreviewSkeletalMesh);
