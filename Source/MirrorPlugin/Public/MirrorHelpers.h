@@ -21,4 +21,11 @@ public:
 	static void DoubleBoneRotationMirror(FDoubleBoneMirror BoneRules, FRotator L_BasePoseRotation, FRotator R_BasePoseRotation, FRotator L_FramePoseRotation, FRotator R_FramePoseRotation, FRotator & L_RotationResult, FRotator & R_RotationResult);
 	static void SingleTrackMirror(FRawAnimSequenceTrack& Track, FTransform BaseBoneTransform, FSingleBoneMirror TrackRules);
 	static void DoubleTrackMirror(FRawAnimSequenceTrack& L_Track, FTransform L_BaseBoneTransform, FRawAnimSequenceTrack& R_Track, FTransform R_BaseBoneTransform, FDoubleBoneMirror TrackRules);
+
+
+
+
+	
+	static bool DoubleBoneMirror(UAnimSequence* SequenceToMirror, FDoubleBoneMirror TrackRules, FRawAnimSequenceTrack& Left_Mirrored, FRawAnimSequenceTrack& Right_Mirrored);
+	static bool SingleBoneMirror(UAnimSequence* SequenceToMirror, FSingleBoneMirror TrackRules, FRawAnimSequenceTrack& Mirrored);
 };

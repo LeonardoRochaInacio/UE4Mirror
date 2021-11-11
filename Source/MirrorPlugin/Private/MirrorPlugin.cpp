@@ -1,8 +1,4 @@
-// Copyright Epic Games, Inc. All Rights Reserved.
-
 #include "MirrorPlugin.h"
-
-
 #include "AssetToolsModule.h"
 #include "IAssetTypeActions.h"
 #include "Interfaces/IPluginManager.h"
@@ -10,6 +6,8 @@
 #include "MirrorPoseDataActions.h"
 
 #define LOCTEXT_NAMESPACE "FMirrorPluginModule"
+
+DEFINE_LOG_CATEGORY(LogMirrorPlugin);
 
 void FMirrorPluginModule::StartupModule()
 {

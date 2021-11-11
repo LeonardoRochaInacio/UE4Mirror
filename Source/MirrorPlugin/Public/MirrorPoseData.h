@@ -34,6 +34,18 @@ struct MIRRORPLUGIN_API FSingleBoneMirror
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	bool LocationZ;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TEnumAsByte<EAxis::Type> MirrorAxis;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TEnumAsByte<EAxis::Type> FlipAxis;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FRotator RotationDifference = FRotator(0.0f);
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	bool bShouldMirrorTranslation;
 };
 
 USTRUCT(BlueprintType)
@@ -67,11 +79,18 @@ struct MIRRORPLUGIN_API FDoubleBoneMirror
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	bool LocationZ;
 
-};
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TEnumAsByte<EAxis::Type> MirrorAxis;
 
-/**
- *  mirror pose asset
- */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TEnumAsByte<EAxis::Type> FlipAxis;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FRotator RotationDifference = FRotator(0.0f);
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	bool bShouldMirrorTranslation;
+};
 
 
 UCLASS(BlueprintType)
@@ -80,10 +99,6 @@ class MIRRORPLUGIN_API UMirrorPoseData : public UObject
 	GENERATED_BODY()
 	
 public:
-
-
-	/*UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = SkeletonSettings)
-	UAnimSequence* xx;*/
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = SkeletonSettings)
 	USkeleton* Skeleton;

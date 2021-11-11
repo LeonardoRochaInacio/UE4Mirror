@@ -106,3 +106,170 @@ void MirrorHelpers::DoubleTrackMirror(FRawAnimSequenceTrack& L_Track, FTransform
 		R_Track.RotKeys[ir] = R_FinalPoseRotation.Quaternion();
 	}
 }
+
+bool MirrorHelpers::DoubleBoneMirror(UAnimSequence* SequenceToMirror, FDoubleBoneMirror TrackRules, 
+	FRawAnimSequenceTrack& Left_Mirrored, FRawAnimSequenceTrack& Right_Mirrored)
+{
+	if (!SequenceToMirror || !SequenceToMirror->GetSkeleton()) return false;
+	const FReferenceSkeleton& Skeleton = SequenceToMirror->GetSkeleton()->GetReferenceSkeleton();
+	if (Skeleton.FindBoneIndex(FName(*TrackRules.RBoneName)) == -1 || Skeleton.FindBoneIndex(FName(*TrackRules.LBoneName)) == -1) return false;
+	const int FrameNumber = SequenceToMirror->GetNumberOfFrames();
+	const TArray<FName> TrackNames = SequenceToMirror->GetAnimationTrackNames();
+	const int Left_TrackIndex = TrackNames.IndexOfByKey(FName(*TrackRules.LBoneName));
+	const int Right_TrackIndex = TrackNames.IndexOfByKey(FName(*TrackRules.RBoneName));
+	if (Left_TrackIndex == -1 && Right_TrackIndex == -1) return false;
+	
+	TArray<FVector> Left_MirroredPositionKeys;
+	TArray<FQuat> Left_MirroredRotationKeys;
+	TArray<FVector> Left_MirroredScaleKeys;
+	
+	Left_MirroredPositionKeys.Reserve(FrameNumber);
+	Left_MirroredRotationKeys.Reserve(FrameNumber);
+	Left_MirroredScaleKeys.Reserve(FrameNumber);
+
+	TArray<FVector> Right_MirroredPositionKeys;
+	TArray<FQuat> Right_MirroredRotationKeys;
+	TArray<FVector> Right_MirroredScaleKeys;
+
+	Right_MirroredPositionKeys.Reserve(FrameNumber);
+	Right_MirroredRotationKeys.Reserve(FrameNumber);
+	Right_MirroredScaleKeys.Reserve(FrameNumber);
+
+	FRawAnimSequenceTrack Left_RawTrack = SequenceToMirror->GetRawAnimationData()[Left_TrackIndex];
+	FRawAnimSequenceTrack Right_RawTrack = SequenceToMirror->GetRawAnimationData()[Right_TrackIndex];
+
+	if(Left_TrackIndex >= 0)
+	{
+		for (int FrameIteration = 0; FrameIteration < FrameNumber; FrameIteration++)
+		{
+			const bool bShouldSetPosition = Left_RawTrack.PosKeys.IsValidIndex(FrameIteration);
+			const bool bShouldSetRotation = Left_RawTrack.RotKeys.IsValidIndex(FrameIteration);
+			const bool bShouldSetScale = Left_RawTrack.ScaleKeys.IsValidIndex(FrameIteration);
+
+			FTransform OriginalSide_Transform;
+
+			if (bShouldSetPosition) OriginalSide_Transform.SetTranslation(Left_RawTrack.PosKeys[FrameIteration]);
+			if (bShouldSetRotation) OriginalSide_Transform.SetRotation(Left_RawTrack.RotKeys[FrameIteration]);
+			if (bShouldSetScale) OriginalSide_Transform.SetScale3D(Left_RawTrack.ScaleKeys[FrameIteration]);
+
+			OriginalSide_Transform.Mirror(TrackRules.MirrorAxis, TrackRules.FlipAxis);
+			OriginalSide_Transform.SetRotation(OriginalSide_Transform.GetRotation() + TrackRules.RotationDifference.Quaternion());
+			OriginalSide_Transform.NormalizeRotation();
+			OriginalSide_Transform.SetScale3D(OriginalSide_Transform.GetScale3D().GetAbs());
+
+			if (bShouldSetPosition) Left_MirroredPositionKeys.Add(OriginalSide_Transform.GetTranslation());
+			if (bShouldSetRotation) Left_MirroredRotationKeys.Add(OriginalSide_Transform.GetRotation());
+			if (bShouldSetScale) Left_MirroredScaleKeys.Add(OriginalSide_Transform.GetScale3D());
+		}
+	}
+	else
+	{
+		FTransform ReferencePoseTransform_Left = Skeleton.GetRefBonePose()[Skeleton.FindBoneIndex(FName(*TrackRules.LBoneName))];
+		ReferencePoseTransform_Left.Mirror(TrackRules.MirrorAxis, TrackRules.FlipAxis);
+		ReferencePoseTransform_Left.SetRotation(ReferencePoseTransform_Left.GetRotation() + TrackRules.RotationDifference.Quaternion());
+		ReferencePoseTransform_Left.NormalizeRotation();
+		ReferencePoseTransform_Left.SetScale3D(ReferencePoseTransform_Left.GetScale3D().GetAbs());
+
+		Left_MirroredPositionKeys.Add(ReferencePoseTransform_Left.GetTranslation());
+		Left_MirroredRotationKeys.Add(ReferencePoseTransform_Left.GetRotation());
+	}
+	
+	
+	if (Right_TrackIndex >= 0)
+	{
+		for (int FrameIteration = 0; FrameIteration < FrameNumber; FrameIteration++)
+		{
+			const bool bShouldSetPosition = Right_RawTrack.PosKeys.IsValidIndex(FrameIteration);
+			const bool bShouldSetRotation = Right_RawTrack.RotKeys.IsValidIndex(FrameIteration);
+			const bool bShouldSetScale = Right_RawTrack.ScaleKeys.IsValidIndex(FrameIteration);
+
+			FTransform OtherSide_Transform;
+
+			if (bShouldSetPosition) OtherSide_Transform.SetTranslation(Right_RawTrack.PosKeys[FrameIteration]);
+			if (bShouldSetRotation) OtherSide_Transform.SetRotation(Right_RawTrack.RotKeys[FrameIteration]);
+			if (bShouldSetScale) OtherSide_Transform.SetScale3D(Right_RawTrack.ScaleKeys[FrameIteration]);
+
+			OtherSide_Transform.Mirror(TrackRules.MirrorAxis, TrackRules.FlipAxis);
+			OtherSide_Transform.SetRotation(OtherSide_Transform.GetRotation() + TrackRules.RotationDifference.Quaternion());
+			OtherSide_Transform.NormalizeRotation();
+			OtherSide_Transform.SetScale3D(OtherSide_Transform.GetScale3D().GetAbs());
+
+			if (bShouldSetPosition) Right_MirroredPositionKeys.Add(OtherSide_Transform.GetTranslation());
+			if (bShouldSetRotation) Right_MirroredRotationKeys.Add(OtherSide_Transform.GetRotation());
+			if (bShouldSetScale) Right_MirroredScaleKeys.Add(OtherSide_Transform.GetScale3D());
+		}
+	}
+	else
+	{
+		FTransform ReferencePoseTransform_Right = Skeleton.GetRefBonePose()[Skeleton.FindBoneIndex(FName(*TrackRules.RBoneName))];
+		ReferencePoseTransform_Right.Mirror(TrackRules.MirrorAxis, TrackRules.FlipAxis);
+		ReferencePoseTransform_Right.SetRotation(ReferencePoseTransform_Right.GetRotation() + TrackRules.RotationDifference.Quaternion());
+		ReferencePoseTransform_Right.NormalizeRotation();
+		ReferencePoseTransform_Right.SetScale3D(ReferencePoseTransform_Right.GetScale3D().GetAbs());
+
+		Right_MirroredPositionKeys.Add(ReferencePoseTransform_Right.GetTranslation());
+		Right_MirroredRotationKeys.Add(ReferencePoseTransform_Right.GetRotation());
+	}
+	
+
+	Left_Mirrored.PosKeys = TrackRules.bShouldMirrorTranslation ? Left_MirroredPositionKeys : Right_MirroredPositionKeys;
+	Left_Mirrored.RotKeys = Left_MirroredRotationKeys;
+	Left_Mirrored.ScaleKeys = Left_MirroredScaleKeys;
+
+	Right_Mirrored.PosKeys = TrackRules.bShouldMirrorTranslation ? Right_MirroredPositionKeys : Left_MirroredPositionKeys;
+	Right_Mirrored.RotKeys = Right_MirroredRotationKeys;
+	Right_Mirrored.ScaleKeys = Right_MirroredScaleKeys;
+
+	return true;
+}
+
+bool MirrorHelpers::SingleBoneMirror(UAnimSequence* SequenceToMirror, FSingleBoneMirror TrackRules,
+	FRawAnimSequenceTrack& Mirrored)
+{
+	if (!SequenceToMirror || !SequenceToMirror->GetSkeleton()) return false;
+	const FReferenceSkeleton& Skeleton = SequenceToMirror->GetSkeleton()->GetReferenceSkeleton();
+	if (Skeleton.FindBoneIndex(FName(*TrackRules.BoneName))) return false;
+	const int FrameNumber = SequenceToMirror->GetNumberOfFrames();
+	const TArray<FName> TrackNames = SequenceToMirror->GetAnimationTrackNames();
+	const int TrackIndex = TrackNames.IndexOfByKey(FName(*TrackRules.BoneName));
+	if (TrackIndex == -1) return false;
+
+	TArray<FVector> MirroredPositionKeys;
+	TArray<FQuat> MirroredRotationKeys;
+	TArray<FVector> MirroredScaleKeys;
+
+	MirroredPositionKeys.Reserve(FrameNumber);
+	MirroredRotationKeys.Reserve(FrameNumber);
+	MirroredScaleKeys.Reserve(FrameNumber);
+
+	FRawAnimSequenceTrack RawTrack = SequenceToMirror->GetRawAnimationData()[TrackIndex];
+
+	for (int FrameIteration = 0; FrameIteration < FrameNumber; FrameIteration++)
+	{
+		const bool bShouldSetPosition = RawTrack.PosKeys.IsValidIndex(FrameIteration);
+		const bool bShouldSetRotation = RawTrack.RotKeys.IsValidIndex(FrameIteration);
+		const bool bShouldSetScale = RawTrack.ScaleKeys.IsValidIndex(FrameIteration);
+
+		FTransform Mirror_Transform;
+
+		if (bShouldSetPosition) Mirror_Transform.SetTranslation(RawTrack.PosKeys[FrameIteration]);
+		if (bShouldSetRotation) Mirror_Transform.SetRotation(RawTrack.RotKeys[FrameIteration]);
+		if (bShouldSetScale) Mirror_Transform.SetScale3D(RawTrack.ScaleKeys[FrameIteration]);
+
+		Mirror_Transform.Mirror(TrackRules.MirrorAxis, TrackRules.FlipAxis);
+		Mirror_Transform.SetRotation(Mirror_Transform.GetRotation() + TrackRules.RotationDifference.Quaternion());
+		/* TALVEZ REMOVER NORMALIZACAO? */
+		Mirror_Transform.NormalizeRotation();
+		Mirror_Transform.SetScale3D(Mirror_Transform.GetScale3D().GetAbs());
+
+		if (bShouldSetPosition) MirroredPositionKeys.Add(Mirror_Transform.GetTranslation());
+		if (bShouldSetRotation) MirroredRotationKeys.Add(Mirror_Transform.GetRotation());
+		if (bShouldSetScale) MirroredScaleKeys.Add(Mirror_Transform.GetScale3D());
+	}
+
+	Mirrored.PosKeys = MirroredPositionKeys;
+	Mirrored.RotKeys = MirroredRotationKeys;
+	Mirrored.ScaleKeys = MirroredScaleKeys;
+
+	return true;
+}

@@ -6,6 +6,8 @@
 #include "Modules/ModuleManager.h"
 #include "Styling/SlateStyle.h"
 
+DECLARE_LOG_CATEGORY_EXTERN(LogMirrorPlugin, Log, All);
+
 class FMirrorPluginModule : public IModuleInterface
 {
 public:
