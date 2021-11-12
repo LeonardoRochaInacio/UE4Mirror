@@ -19,6 +19,12 @@
 			"Name": "MirrorPlugin",
 			"Type": "DeveloperTool",
 			"LoadingPhase": "Default"
+		},
+		{
+			"Name": "MirrorPluginEditor",
+			"Type": "Editor",
+			"LoadingPhase": "PreDefault"
 		}
+			
 	]
 }

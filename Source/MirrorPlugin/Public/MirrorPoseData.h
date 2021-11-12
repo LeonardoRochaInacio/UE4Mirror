@@ -43,9 +43,6 @@ struct MIRRORPLUGIN_API FSingleBoneMirror
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FRotator RotationDifference = FRotator(0.0f);
-	
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	bool bShouldMirrorTranslation;
 };
 
 USTRUCT(BlueprintType)
@@ -94,7 +91,7 @@ struct MIRRORPLUGIN_API FDoubleBoneMirror
 
 
 UCLASS(BlueprintType)
-class MIRRORPLUGIN_API UMirrorPoseData : public UObject
+class MIRRORPLUGIN_API UMirrorPoseData final : public UObject
 {
 	GENERATED_BODY()
 	
@@ -104,16 +101,9 @@ public:
 	USkeleton* Skeleton;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = GeneralSettings)
-	FString RootBoneName;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = GeneralSettings)
 	TArray<FSingleBoneMirror> SingleBones;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = GeneralSettings)
 	TArray<FDoubleBoneMirror> DoubleBones;
-
-public:
-
-	static void ProcessMirrorTrack(const UMirrorPoseData* DataPose, UAnimSequence* AnimSequence);
 
 };

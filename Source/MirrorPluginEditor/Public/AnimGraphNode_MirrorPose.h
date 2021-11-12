@@ -7,7 +7,7 @@
 #include "AnimGraphNode_MirrorPose.generated.h"
 
 USTRUCT(BlueprintType)
-struct MIRRORPLUGIN_API FAnimNode_MirrorPose : public FAnimNode_Base
+struct MIRRORPLUGINEDITOR_API FAnimNode_MirrorPose : public FAnimNode_Base
 {
 
 	GENERATED_USTRUCT_BODY()
@@ -42,7 +42,7 @@ private:
 // ---------------------------------------------------------------------------- 
 
 UCLASS(BlueprintType)
-class MIRRORPLUGIN_API UAnimGraphNode_MirrorPose : public UAnimGraphNode_Base
+class MIRRORPLUGINEDITOR_API UAnimGraphNode_MirrorPose : public UAnimGraphNode_Base
 {
 	GENERATED_BODY()
 

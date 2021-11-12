@@ -3,9 +3,9 @@
 #include "CoreMinimal.h"
 #include "Styling/SlateStyle.h"
 
-DECLARE_LOG_CATEGORY_EXTERN(LogMirrorPlugin, Log, All);
+DECLARE_LOG_CATEGORY_EXTERN(LogMirrorPluginEditor, Log, All);
 
-class FMirrorPluginModule : public IModuleInterface
+class FMirrorPluginEditorModule final : public IModuleInterface
 {
 public:
 

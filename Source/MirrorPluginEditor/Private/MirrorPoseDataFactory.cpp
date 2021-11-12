@@ -1,5 +1,3 @@
-#if WITH_EDITOR
-
 #include "MirrorPoseDataFactory.h"
 #include "MirrorPoseData.h"
 #include "Developer/AssetTools/Public/AssetTypeCategories.h"
@@ -21,4 +19,3 @@ uint32 UMirrorPoseDataFactory::GetMenuCategories() const
 {
 	return EAssetTypeCategories::Animation;
 }
-#endif

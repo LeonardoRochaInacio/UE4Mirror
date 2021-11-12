@@ -19,7 +19,7 @@ class FPlaneViewportClient;
 /**
  * 
  */
-class MIRRORPLUGIN_API SPlaneViewport : public /*SCompoundWidget*/SEditorViewport
+class MIRRORPLUGINEDITOR_API SPlaneViewport : public /*SCompoundWidget*/SEditorViewport
 {
 public:
 	SLATE_BEGIN_ARGS(SPlaneViewport)

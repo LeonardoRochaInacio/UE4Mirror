@@ -10,7 +10,7 @@
  * 
  */
 UCLASS()
-class MIRRORPLUGIN_API UMirrorPosePlaneViewportComponent : public UStaticMeshComponent
+class MIRRORPLUGINEDITOR_API UMirrorPosePlaneViewportComponent : public UStaticMeshComponent
 {
 	GENERATED_BODY()
 

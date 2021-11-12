@@ -273,3 +273,59 @@ bool MirrorHelpers::SingleBoneMirror(UAnimSequence* SequenceToMirror, FSingleBon
 
 	return true;
 }
+
+void MirrorHelpers::ProcessMirrorTrack(UAnimSequence* SequenceToMirror, const UMirrorPoseData* DataPose)
+{
+	if (!SequenceToMirror || SequenceToMirror->GetSkeleton() != DataPose->Skeleton || !DataPose) return;
+	const FReferenceSkeleton& Skeleton = SequenceToMirror->GetSkeleton()->GetReferenceSkeleton();
+
+	for (FSingleBoneMirror SingleBoneItem : DataPose->SingleBones)
+	{
+		FRawAnimSequenceTrack Mirrored;
+		SingleBoneMirror(SequenceToMirror, SingleBoneItem, Mirrored);
+		SequenceToMirror->AddNewRawTrack(FName(*SingleBoneItem.BoneName), &Mirrored);
+	}
+
+	for (FDoubleBoneMirror DoubleBoneItem : DataPose->DoubleBones)
+	{		
+		FRawAnimSequenceTrack Left_Mirrored;
+		FRawAnimSequenceTrack Right_Mirrored;
+		DoubleBoneMirror(SequenceToMirror, DoubleBoneItem, Left_Mirrored, Right_Mirrored);
+		SequenceToMirror->AddNewRawTrack(FName(*DoubleBoneItem.LBoneName), &Left_Mirrored);
+		SequenceToMirror->AddNewRawTrack(FName(*DoubleBoneItem.RBoneName), &Right_Mirrored);
+	}
+
+	SequenceToMirror->PostProcessSequence();
+		
+		/*TArray<FName> TrackNames = AnimSequence->GetAnimationTrackNames();
+
+		for (FSingleBoneMirror SBoneMirror : DataPose->SingleBones)
+		{
+			int32 Index = TrackNames.Find(*SBoneMirror.BoneName);
+			FRawAnimSequenceTrack& FramePoseTrack = AnimSequence->GetRawAnimationTrack(Index);
+			MirrorHelpers::SingleTrackMirror(FramePoseTrack, DataPose->Skeleton->GetRefLocalPoses()[Index], SBoneMirror);
+		}
+
+
+		for (FDoubleBoneMirror DBoneMirror : DataPose->DoubleBones)
+		{
+			int32 C_L_Index = AnimSequence->GetAnimationTrackNames().Find(*DBoneMirror.LBoneName);
+			int32 C_R_Index = AnimSequence->GetAnimationTrackNames().Find(*DBoneMirror.RBoneName);
+
+			int32 L_Index = AnimSequence->GetSkeletonIndexFromRawDataTrackIndex(C_L_Index);
+			int32 R_Index = AnimSequence->GetSkeletonIndexFromRawDataTrackIndex(C_R_Index);
+
+
+
+			FRawAnimSequenceTrack& L_FramePoseTrack = AnimSequence->GetRawAnimationTrack(C_L_Index);
+			FRawAnimSequenceTrack& R_FramePoseTrack = AnimSequence->GetRawAnimationTrack(C_R_Index);
+			MirrorHelpers::DoubleTrackMirror(L_FramePoseTrack, DataPose->Skeleton->GetRefLocalPoses()[L_Index], R_FramePoseTrack, DataPose->Skeleton->GetRefLocalPoses()[R_Index], DBoneMirror);
+			//	UE_LOG(LogClass, Warning, TEXT("%s - %s"), *DataPose->Skeleton->GetReferenceSkeleton().GetBoneName(AnimSequence->GetSkeletonIndexFromRawDataTrackIndex(L_Index)).ToString(), *DataPose->Skeleton->GetReferenceSkeleton().GetBoneName(AnimSequence->GetSkeletonIndexFromRawDataTrackIndex(R_Index)).ToString());
+			//	UE_LOG(LogClass, Warning, TEXT("[%i, %i] - [%i, %i]"), C_L_Index, L_Index, C_R_Index, R_Index);
+		}
+
+
+		AnimSequence->PostProcessSequence();
+	*/
+		
+}

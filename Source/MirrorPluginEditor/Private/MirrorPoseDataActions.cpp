@@ -2,8 +2,6 @@
 #include "MirrorPoseData.h"
 
 
-//FMirrorPoseDataActions::FMirrorPoseDataActions(EAssetTypeCategories::Type InAssetCategory) {}
-
 FColor FMirrorPoseDataActions::GetTypeColor() const
 {
 	return FColor::Black;

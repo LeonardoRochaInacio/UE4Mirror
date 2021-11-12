@@ -28,4 +28,5 @@ public:
 	
 	static bool DoubleBoneMirror(UAnimSequence* SequenceToMirror, FDoubleBoneMirror TrackRules, FRawAnimSequenceTrack& Left_Mirrored, FRawAnimSequenceTrack& Right_Mirrored);
 	static bool SingleBoneMirror(UAnimSequence* SequenceToMirror, FSingleBoneMirror TrackRules, FRawAnimSequenceTrack& Mirrored);
+	static void ProcessMirrorTrack(UAnimSequence* SequenceToMirror, const UMirrorPoseData* DataPose);
 };
