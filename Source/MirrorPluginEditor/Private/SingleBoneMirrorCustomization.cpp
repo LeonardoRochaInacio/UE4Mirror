@@ -75,37 +75,165 @@ bool FSingleBoneMirrorCustomization::CheckSkeletonSelected(UMirrorPoseData*& Out
 	return false;
 }
 
+FReply FSingleBoneMirrorCustomization::AxisOnClicked() const
+{
+	if (CurrentSingleBoneStructure->MirrorAxis == EAxis::Z)
+	{
+		CurrentSingleBoneStructure->MirrorAxis = EAxis::X;
+	}
+	else
+	{
+		CurrentSingleBoneStructure->MirrorAxis = StaticCast<EAxis::Type>(StaticCast<int>(CurrentSingleBoneStructure->MirrorAxis) + 1);
+	}
+
+	AxisText->SetText(ConvertAxisFlipTypeToText(CurrentSingleBoneStructure->MirrorAxis));
+
+	return FReply::Handled();
+}
+
+FReply FSingleBoneMirrorCustomization::FlipOnClicked() const
+{	
+	if (CurrentSingleBoneStructure->FlipAxis == EAxis::Z)
+	{
+		CurrentSingleBoneStructure->FlipAxis = EAxis::X;
+	}
+	else
+	{
+		CurrentSingleBoneStructure->FlipAxis = StaticCast<EAxis::Type>(StaticCast<int>(CurrentSingleBoneStructure->FlipAxis) + 1);
+	}
+
+	FlipText->SetText(ConvertAxisFlipTypeToText(CurrentSingleBoneStructure->FlipAxis));
+
+	return FReply::Handled();
+}
+
+FText FSingleBoneMirrorCustomization::ConvertAxisFlipTypeToText(const EAxis::Type Type) const
+{
+	if(Type == EAxis::X)
+	{
+		return FText::FromString("X");
+	}
+	else if(Type == EAxis::Y)
+	{
+		return FText::FromString("Y");
+	}
+	else if(Type == EAxis::Z)
+	{
+		return FText::FromString("Z");
+	}
+
+	return FText::FromString("None - Error");
+}
+
 void FSingleBoneMirrorCustomization::CustomizeHeader(TSharedRef<class IPropertyHandle> StructPropertyHandle, class FDetailWidgetRow& HeaderRow, IPropertyTypeCustomizationUtils& StructCustomizationUtils)
 {
 	StructHandle = StructPropertyHandle;
-
+	TArray<void*> RawData;
+	StructHandle->AccessRawData(RawData);
+	
+	if (RawData.Num() != 1)
+	{
+		UE_LOG(LogClass, Error, TEXT("Multiple or zero values on RawData from FSingleBoneMirrorCustomization::CustomizeHeader"));
+		return;
+	}
+	else
+	{
+		CurrentSingleBoneStructure = StaticCast<FSingleBoneMirror*>(RawData[0]);
+		if(CurrentSingleBoneStructure == nullptr)
+		{
+			UE_LOG(LogClass, Error, TEXT("Invalid CurrentSingleBoneStructure"));
+			return;
+		}
+	}
+	
 	UMirrorPoseData* OuterInstance;
 	USkeleton* TargetSkeleton;
-	if (!CheckSkeletonSelected(OuterInstance, TargetSkeleton)) return;
+	if (!CheckSkeletonSelected(OuterInstance, TargetSkeleton))
+	{
+		UE_LOG(LogClass, Error, TEXT("Some problem on OuterObjects from FSingleBoneMirrorCustomization::CheckSkeletonSelected"));
+		return;
+	}
 
 	FString CurrentSelectBone;
-	StructPropertyHandle->GetChildHandle("BoneName")->GetValue(CurrentSelectBone);
+	StructHandle->GetChildHandle("BoneName")->GetValue(CurrentSelectBone);
 	
 	const FString ValueContentName = (!CurrentSelectBone.IsEmpty() && TargetSkeleton->GetReferenceSkeleton().FindBoneIndex(*CurrentSelectBone) != INDEX_NONE) ? CurrentSelectBone : "None";
 
+	if(CurrentSingleBoneStructure->MirrorAxis == 0 || CurrentSingleBoneStructure->MirrorAxis > 3)
+	{
+		CurrentSingleBoneStructure->MirrorAxis = EAxis::X;
+	}
+
+	if (CurrentSingleBoneStructure->FlipAxis == 0 || CurrentSingleBoneStructure->FlipAxis > 3)
+	{
+		CurrentSingleBoneStructure->FlipAxis = EAxis::X;
+	}
+	
 	HeaderRow.NameContent()
-		[
-			SNew(STextBlock)
-			.Text(FText::FromString("Bone Settings"))
-		];
+	[
+		SNew(STextBlock)
+		.Text(FText::FromString("Bone Settings"))
+	];
 
 	HeaderRow.ValueContent()
+	.MinDesiredWidth(250.0f)
+	[
+		SNew(SHorizontalBox)
+		+ SHorizontalBox::Slot()
+		.AutoWidth()
+		.VAlign(EVerticalAlignment::VAlign_Center)
+		[
+			SNew(SBox)
+			.MinDesiredWidth(200.0f)
+			[
+				SNew(STextBlock)
+				.Text(FText::FromString("[" + ValueContentName + "]"))
+				.ColorAndOpacity(FSlateColor(FLinearColor(0.5f, 0.0f, 0.0f)))
+				.Margin(FMargin(5.0f, 0.0f, 0.0f, 0.0f))
+			]
+		]
+		+ SHorizontalBox::Slot()
+		.AutoWidth()
+		.VAlign(EVerticalAlignment::VAlign_Center)
 		[
 			SNew(STextBlock)
-			.Text(FText::FromString("[" + ValueContentName + "]"))
-		.ColorAndOpacity(FSlateColor(FLinearColor(0.8f, 0.0f, 0.0f)))
-		.Margin(FMargin(5.0f, 0.0f, 0.0f, 0.0f))
-		];
+			.Text(FText::FromString("Mirror Axis: "))
+			.ColorAndOpacity(FSlateColor(FLinearColor(0.5f, 0.0f, 0.0f)))
+			.Margin(FMargin(5.0f, 0.0f, 0.0f, 0.0f))
+		]
+		+ SHorizontalBox::Slot()
+		.Padding(FMargin(0.0f, 0.0f, 10.0f, 0.0f))
+		.AutoWidth()
+		[
+			SNew(SButton).OnClicked_Raw(this, &FSingleBoneMirrorCustomization::AxisOnClicked)
+			[
+				SAssignNew(AxisText, STextBlock).Text(ConvertAxisFlipTypeToText(CurrentSingleBoneStructure->MirrorAxis))
+			]
+		]
+		+ SHorizontalBox::Slot()
+		.AutoWidth()
+		.VAlign(EVerticalAlignment::VAlign_Center)
+		[
+			SNew(STextBlock)
+			.Text(FText::FromString("Flip Axis: "))
+			.ColorAndOpacity(FSlateColor(FLinearColor(0.5f, 0.0f, 0.0f)))
+			.Margin(FMargin(5.0f, 0.0f, 0.0f, 0.0f))
+		]
+		+ SHorizontalBox::Slot()
+		.Padding(FMargin(0.0f, 0.0f, 10.0f, 0.0f))
+		.AutoWidth()
+		[
+			SNew(SButton).OnClicked_Raw(this, &FSingleBoneMirrorCustomization::FlipOnClicked)
+			[
+				SAssignNew(FlipText, STextBlock).Text(ConvertAxisFlipTypeToText(CurrentSingleBoneStructure->FlipAxis))
+			]
+		]
+	];	
 }
 
 void FSingleBoneMirrorCustomization::CustomizeChildren(TSharedRef<class IPropertyHandle> StructPropertyHandle, class IDetailChildrenBuilder& StructBuilder, IPropertyTypeCustomizationUtils& StructCustomizationUtils)
 {
-	//return;
+	return;
 	Builder = &StructBuilder;
 
 	UMirrorPoseData* OuterInstance;
@@ -142,13 +270,13 @@ void FSingleBoneMirrorCustomization::CustomizeChildren(TSharedRef<class IPropert
 		[
 			SNew(SComboBox<TSharedPtr<FString>>)
 			.OptionsSource(&Options)
-		.OnGenerateWidget(this, &FSingleBoneMirrorCustomization::MakeOption)
-		.OnSelectionChanged(this, &FSingleBoneMirrorCustomization::OnSelection)
-		.InitiallySelectedItem(CurrentSelectItem)
-		[
-			SNew(STextBlock)
-			.Text(this, &FSingleBoneMirrorCustomization::GetCurrentItem)
-		]
+			.OnGenerateWidget(this, &FSingleBoneMirrorCustomization::MakeOption)
+			.OnSelectionChanged(this, &FSingleBoneMirrorCustomization::OnSelection)
+			.InitiallySelectedItem(CurrentSelectItem)
+			[
+				SNew(STextBlock)
+				.Text(this, &FSingleBoneMirrorCustomization::GetCurrentItem)
+			]
 		];
 
 

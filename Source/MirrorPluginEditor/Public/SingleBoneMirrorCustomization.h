@@ -31,7 +31,19 @@ private:
 	TSharedPtr<IPropertyHandle> StructHandle;
 
 	IDetailChildrenBuilder* Builder = nullptr;
+	
+	FReply AxisOnClicked() const;
 
+	FReply FlipOnClicked() const;
+
+	FText ConvertAxisFlipTypeToText(const EAxis::Type Type) const;
+
+	TSharedPtr<STextBlock> AxisText;
+
+	TSharedPtr<STextBlock> FlipText;
+
+	struct FSingleBoneMirror* CurrentSingleBoneStructure = nullptr;
+	
 public:
 
 	/* Interface implementation */

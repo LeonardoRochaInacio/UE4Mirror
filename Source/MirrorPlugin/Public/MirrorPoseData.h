@@ -36,10 +36,10 @@ struct MIRRORPLUGIN_API FSingleBoneMirror
 	bool LocationZ;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TEnumAsByte<EAxis::Type> MirrorAxis;
+	TEnumAsByte<EAxis::Type> MirrorAxis = EAxis::Type::X;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TEnumAsByte<EAxis::Type> FlipAxis;
+	TEnumAsByte<EAxis::Type> FlipAxis = EAxis::Type::X;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FRotator RotationDifference = FRotator(0.0f);
@@ -77,10 +77,10 @@ struct MIRRORPLUGIN_API FDoubleBoneMirror
 	bool LocationZ;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TEnumAsByte<EAxis::Type> MirrorAxis;
+	TEnumAsByte<EAxis::Type> MirrorAxis = EAxis::Type::X;;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TEnumAsByte<EAxis::Type> FlipAxis;
+	TEnumAsByte<EAxis::Type> FlipAxis = EAxis::Type::X;;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FRotator RotationDifference = FRotator(0.0f);

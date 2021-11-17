@@ -9,9 +9,9 @@ class FDoubleBoneMirrorCustomization : public IPropertyTypeCustomization
 
 private:
 
-	TSharedRef<SWidget> BoolWidget(TSharedRef<SWidget> BoolProperty, FString Text);
+	TSharedRef<SWidget> BoolWidget(TSharedRef<SWidget> BoolProperty, FString Text) const;
 
-	TSharedRef<SWidget> MakeOption(TSharedPtr<FString> Option);
+	TSharedRef<SWidget> MakeOption(TSharedPtr<FString> Option) const;
 
 	FText RGetCurrentItem() const;
 
@@ -21,7 +21,7 @@ private:
 
 	void LOnSelection(TSharedPtr<FString> Option, ESelectInfo::Type);
 
-	bool CheckSkeletonSelected(UMirrorPoseData*& OuterInstance, USkeleton*& Skeleton);
+	bool CheckSkeletonSelected(UMirrorPoseData*& OuterInstance, USkeleton*& Skeleton) const;
 
 private:
 
@@ -33,7 +33,19 @@ private:
 
 	TSharedPtr<IPropertyHandle> StructHandle;
 
+	FReply AxisOnClicked() const;
+
+	FReply FlipOnClicked() const;
+
+	FText ConvertAxisFlipTypeToText(const EAxis::Type Type) const;
+	
 	IDetailChildrenBuilder* Builder = nullptr;
+
+	TSharedPtr<STextBlock> AxisText;
+
+	TSharedPtr<STextBlock> FlipText;
+
+	struct FDoubleBoneMirror* CurrentDoubleBoneStructure = nullptr;
 
 public:
 

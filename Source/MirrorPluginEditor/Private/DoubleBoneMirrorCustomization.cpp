@@ -17,7 +17,7 @@ TSharedRef<IPropertyTypeCustomization> FDoubleBoneMirrorCustomization::MakeInsta
 	return MakeShareable(new FDoubleBoneMirrorCustomization());
 }
 
-TSharedRef<SWidget> FDoubleBoneMirrorCustomization::BoolWidget(TSharedRef<SWidget> BoolProperty, FString Text)
+TSharedRef<SWidget> FDoubleBoneMirrorCustomization::BoolWidget(TSharedRef<SWidget> BoolProperty, FString Text) const
 {
 	TSharedRef<SWidget> GeneratedWidget =
 		SNew(SHorizontalBox)
@@ -37,7 +37,7 @@ TSharedRef<SWidget> FDoubleBoneMirrorCustomization::BoolWidget(TSharedRef<SWidge
 	return GeneratedWidget;
 }
 
-TSharedRef<SWidget> FDoubleBoneMirrorCustomization::MakeOption(TSharedPtr<FString> Option)
+TSharedRef<SWidget> FDoubleBoneMirrorCustomization::MakeOption(TSharedPtr<FString> Option) const
 {
 	return SNew(STextBlock).Text(FText::FromString(*Option));
 }
@@ -82,7 +82,7 @@ FText FDoubleBoneMirrorCustomization::LGetCurrentItem() const
 	}
 }
 
-bool FDoubleBoneMirrorCustomization::CheckSkeletonSelected(UMirrorPoseData*& OuterInstance, USkeleton*& Skeleton)
+bool FDoubleBoneMirrorCustomization::CheckSkeletonSelected(UMirrorPoseData*& OuterInstance, USkeleton*& Skeleton) const
 {
 	TArray<UObject*> OuterObjects;
 	StructHandle->GetOuterObjects(OuterObjects);
@@ -96,13 +96,84 @@ bool FDoubleBoneMirrorCustomization::CheckSkeletonSelected(UMirrorPoseData*& Out
 	return false;
 }
 
+FReply FDoubleBoneMirrorCustomization::AxisOnClicked() const
+{
+	if (CurrentDoubleBoneStructure->MirrorAxis == EAxis::Z)
+	{
+		CurrentDoubleBoneStructure->MirrorAxis = EAxis::X;
+	}
+	else
+	{
+		CurrentDoubleBoneStructure->MirrorAxis = StaticCast<EAxis::Type>(StaticCast<int>(CurrentDoubleBoneStructure->MirrorAxis) + 1);
+	}
+
+	AxisText->SetText(ConvertAxisFlipTypeToText(CurrentDoubleBoneStructure->MirrorAxis));
+
+	return FReply::Handled();
+}
+
+FReply FDoubleBoneMirrorCustomization::FlipOnClicked() const
+{
+	if (CurrentDoubleBoneStructure->FlipAxis == EAxis::Z)
+	{
+		CurrentDoubleBoneStructure->FlipAxis = EAxis::X;
+	}
+	else
+	{
+		CurrentDoubleBoneStructure->FlipAxis = StaticCast<EAxis::Type>(StaticCast<int>(CurrentDoubleBoneStructure->FlipAxis) + 1);
+	}
+
+	FlipText->SetText(ConvertAxisFlipTypeToText(CurrentDoubleBoneStructure->FlipAxis));
+
+	return FReply::Handled();
+}
+
+FText FDoubleBoneMirrorCustomization::ConvertAxisFlipTypeToText(const EAxis::Type Type) const
+{
+	if (Type == EAxis::X)
+	{
+		return FText::FromString("X");
+	}
+	else if (Type == EAxis::Y)
+	{
+		return FText::FromString("Y");
+	}
+	else if (Type == EAxis::Z)
+	{
+		return FText::FromString("Z");
+	}
+
+	return FText::FromString("None - Error");
+}
+
 void FDoubleBoneMirrorCustomization::CustomizeHeader(TSharedRef<class IPropertyHandle> StructPropertyHandle, class FDetailWidgetRow& HeaderRow, IPropertyTypeCustomizationUtils& StructCustomizationUtils)
 {
 	StructHandle = StructPropertyHandle;
+	TArray<void*> RawData;
+	StructHandle->AccessRawData(RawData);
 
+	if (RawData.Num() != 1)
+	{
+		UE_LOG(LogClass, Error, TEXT("Multiple or zero values on RawData from FDoubleBoneMirrorCustomization::CustomizeHeader"));
+		return;
+	}
+	else
+	{
+		CurrentDoubleBoneStructure = StaticCast<FDoubleBoneMirror*>(RawData[0]);
+		if (CurrentDoubleBoneStructure == nullptr)
+		{
+			UE_LOG(LogClass, Error, TEXT("Invalid CurrentDoubleBoneStructure"));
+			return;
+		}
+	}
+	
 	UMirrorPoseData* OuterInstance;
 	USkeleton* TargetSkeleton;
-	if (!CheckSkeletonSelected(OuterInstance, TargetSkeleton)) return;
+	if (!CheckSkeletonSelected(OuterInstance, TargetSkeleton))
+	{
+		UE_LOG(LogClass, Error, TEXT("Some problem on OuterObjects from FDoubleBoneMirrorCustomization::CheckSkeletonSelected"));
+		return;
+	}
 
 	FString LCurrentSelectBone;
 	StructPropertyHandle->GetChildHandle("LBoneName")->GetValue(LCurrentSelectBone);
@@ -110,27 +181,84 @@ void FDoubleBoneMirrorCustomization::CustomizeHeader(TSharedRef<class IPropertyH
 	FString RCurrentSelectBone;
 	StructPropertyHandle->GetChildHandle("RBoneName")->GetValue(RCurrentSelectBone);
 
-	FString LValueContentName = (!LCurrentSelectBone.IsEmpty() && TargetSkeleton->GetReferenceSkeleton().FindBoneIndex(*LCurrentSelectBone) != INDEX_NONE) ? LCurrentSelectBone : "None";
-	FString RValueContentName = (!RCurrentSelectBone.IsEmpty() && TargetSkeleton->GetReferenceSkeleton().FindBoneIndex(*RCurrentSelectBone) != INDEX_NONE) ? RCurrentSelectBone : "None";
+	const FString LValueContentName = (!LCurrentSelectBone.IsEmpty() && TargetSkeleton->GetReferenceSkeleton().FindBoneIndex(*LCurrentSelectBone) != INDEX_NONE) ? LCurrentSelectBone : "None";
+	const FString RValueContentName = (!RCurrentSelectBone.IsEmpty() && TargetSkeleton->GetReferenceSkeleton().FindBoneIndex(*RCurrentSelectBone) != INDEX_NONE) ? RCurrentSelectBone : "None";
 
+	if (CurrentDoubleBoneStructure->MirrorAxis == 0 || CurrentDoubleBoneStructure->MirrorAxis > 3)
+	{
+		CurrentDoubleBoneStructure->MirrorAxis = EAxis::X;
+	}
+
+	if (CurrentDoubleBoneStructure->FlipAxis == 0 || CurrentDoubleBoneStructure->FlipAxis > 3)
+	{
+		CurrentDoubleBoneStructure->FlipAxis = EAxis::X;
+	}
+	
 	HeaderRow.NameContent()
-		[
-			SNew(STextBlock)
-			.Text(FText::FromString("Bone Settings"))
-		];
+	[
+		SNew(STextBlock)
+		.Text(FText::FromString("Bone Settings"))
+	];
 
 	HeaderRow.ValueContent()
-		.MinDesiredWidth(250.0f)
+	.MinDesiredWidth(250.0f)
+	[
+		SNew(SHorizontalBox)
+		+ SHorizontalBox::Slot()
+		.AutoWidth()
+		.VAlign(EVerticalAlignment::VAlign_Center)
+		[
+			SNew(SBox)
+			.MinDesiredWidth(200.0f)
+			[
+				SNew(STextBlock)
+				.Text(FText::FromString("[" + LValueContentName + "]" + " <---> " + "[" + RValueContentName + "]"))
+				.ColorAndOpacity(FSlateColor(FLinearColor(0.8f, 0.0f, 0.0f)))
+				.Margin(FMargin(5.0f, 0.0f, 0.0f, 0.0f))
+			]
+		]
+		+ SHorizontalBox::Slot()
+		.AutoWidth()
+		.VAlign(EVerticalAlignment::VAlign_Center)
 		[
 			SNew(STextBlock)
-			.Text(FText::FromString("[" + LValueContentName + "]" + " <---> " + "[" + RValueContentName + "]"))
-		.ColorAndOpacity(FSlateColor(FLinearColor(0.8f, 0.0f, 0.0f)))
-		.Margin(FMargin(5.0f, 0.0f, 0.0f, 0.0f))
-		];
+			.Text(FText::FromString("Mirror Axis: "))
+			.ColorAndOpacity(FSlateColor(FLinearColor(0.5f, 0.0f, 0.0f)))
+			.Margin(FMargin(5.0f, 0.0f, 0.0f, 0.0f))
+		]
+		+ SHorizontalBox::Slot()
+		.Padding(FMargin(0.0f, 0.0f, 10.0f, 0.0f))
+		.AutoWidth()
+		[
+			SNew(SButton).OnClicked_Raw(this, &FDoubleBoneMirrorCustomization::AxisOnClicked)
+			[
+				SAssignNew(AxisText, STextBlock).Text(ConvertAxisFlipTypeToText(CurrentDoubleBoneStructure->MirrorAxis))
+			]
+		]
+		+ SHorizontalBox::Slot()
+		.AutoWidth()
+			.VAlign(EVerticalAlignment::VAlign_Center)
+		[
+			SNew(STextBlock)
+			.Text(FText::FromString("Flip Axis: "))
+			.ColorAndOpacity(FSlateColor(FLinearColor(0.5f, 0.0f, 0.0f)))
+			.Margin(FMargin(5.0f, 0.0f, 0.0f, 0.0f))
+		]
+		+ SHorizontalBox::Slot()
+		.Padding(FMargin(0.0f, 0.0f, 10.0f, 0.0f))
+		.AutoWidth()
+		[
+			SNew(SButton).OnClicked_Raw(this, &FDoubleBoneMirrorCustomization::FlipOnClicked)
+			[
+				SAssignNew(FlipText, STextBlock).Text(ConvertAxisFlipTypeToText(CurrentDoubleBoneStructure->FlipAxis))
+			]
+		]	
+	];
 }
 
 void FDoubleBoneMirrorCustomization::CustomizeChildren(TSharedRef<class IPropertyHandle> StructPropertyHandle, class IDetailChildrenBuilder& StructBuilder, IPropertyTypeCustomizationUtils& StructCustomizationUtils)
 {
+	return;
 	Builder = &StructBuilder;
 
 	UMirrorPoseData* OuterInstance;
