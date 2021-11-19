@@ -22,6 +22,8 @@ private:
 
 	bool CheckSkeletonSelected(UMirrorPoseData*& OuterInstance, USkeleton*& Skeleton) const;
 
+	void GenerateBoneOptionList(const FReferenceSkeleton RefSkeleton, const FString CurrentSelectBone);
+
 private:
 
 	TArray<TSharedPtr<FString>> Options;
@@ -37,6 +39,8 @@ private:
 	FReply FlipOnClicked() const;
 
 	FText ConvertAxisFlipTypeToText(const EAxis::Type Type) const;
+
+	FLinearColor ConvertAxisFlipTypeToColor(const EAxis::Type Type) const;
 
 	TSharedPtr<STextBlock> AxisText;
 

@@ -86,7 +86,7 @@ struct MIRRORPLUGIN_API FDoubleBoneMirror
 	FRotator RotationDifference = FRotator(0.0f);
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	bool bShouldMirrorTranslation;
+	bool bShouldMirrorTranslation = true;
 };
 
 

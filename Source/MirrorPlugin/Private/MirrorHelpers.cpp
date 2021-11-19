@@ -138,6 +138,19 @@ bool MirrorHelpers::DoubleBoneMirror(UAnimSequence* SequenceToMirror, FDoubleBon
 	FRawAnimSequenceTrack Left_RawTrack = SequenceToMirror->GetRawAnimationData()[Left_TrackIndex];
 	FRawAnimSequenceTrack Right_RawTrack = SequenceToMirror->GetRawAnimationData()[Right_TrackIndex];
 
+	FTransform ReferencePose_Left = Skeleton.GetRefBonePose()[Skeleton.FindBoneIndex(FName(*TrackRules.LBoneName))];
+	FTransform ReferencePose_Right = Skeleton.GetRefBonePose()[Skeleton.FindBoneIndex(FName(*TrackRules.RBoneName))];
+	FRotator Reference_RMinusL = ReferencePose_Right.Rotator();
+	FRotator Reference_LMinusR = ReferencePose_Left.Rotator();
+	
+	Reference_RMinusL.Roll -= ReferencePose_Left.Rotator().Roll;
+	Reference_RMinusL.Pitch -= ReferencePose_Left.Rotator().Pitch;
+	Reference_RMinusL.Yaw -= ReferencePose_Left.Rotator().Yaw;
+
+	Reference_LMinusR.Roll -= ReferencePose_Right.Rotator().Roll;
+	Reference_LMinusR.Pitch -= ReferencePose_Right.Rotator().Pitch;
+	Reference_LMinusR.Yaw -= ReferencePose_Right.Rotator().Yaw;
+	
 	if(Left_TrackIndex >= 0)
 	{
 		for (int FrameIteration = 0; FrameIteration < FrameNumber; FrameIteration++)
@@ -151,10 +164,24 @@ bool MirrorHelpers::DoubleBoneMirror(UAnimSequence* SequenceToMirror, FDoubleBon
 			if (bShouldSetPosition) OriginalSide_Transform.SetTranslation(Left_RawTrack.PosKeys[FrameIteration]);
 			if (bShouldSetRotation) OriginalSide_Transform.SetRotation(Left_RawTrack.RotKeys[FrameIteration]);
 			if (bShouldSetScale) OriginalSide_Transform.SetScale3D(Left_RawTrack.ScaleKeys[FrameIteration]);
+			
+			UE_LOG(LogClass, Warning, TEXT("[R SIDE] Before mirror frame %i from bone %s with rotation %s."),
+			FrameIteration, *TrackRules.LBoneName, *OriginalSide_Transform.Rotator().ToString());
 
 			OriginalSide_Transform.Mirror(TrackRules.MirrorAxis, TrackRules.FlipAxis);
-			OriginalSide_Transform.SetRotation(OriginalSide_Transform.GetRotation() + TrackRules.RotationDifference.Quaternion());
+
+			FRotator Temp_OriginalSideRotator = OriginalSide_Transform.Rotator();
+			Temp_OriginalSideRotator.Roll += Reference_RMinusL.Roll;
+			Temp_OriginalSideRotator.Pitch += Reference_RMinusL.Pitch;
+			Temp_OriginalSideRotator.Yaw += Reference_RMinusL.Yaw;
+			OriginalSide_Transform.SetRotation(Temp_OriginalSideRotator.Quaternion());
 			OriginalSide_Transform.NormalizeRotation();
+			
+			UE_LOG(LogClass, Warning, TEXT("[R SIDE] After mirror frame %i from bone %s with rotation %s."),
+			FrameIteration, *TrackRules.LBoneName, *OriginalSide_Transform.Rotator().ToString());
+			
+			//OriginalSide_Transform.SetRotation(OriginalSide_Transform.GetRotation() + TrackRules.RotationDifference.Quaternion());
+			//OriginalSide_Transform.NormalizeRotation();
 			OriginalSide_Transform.SetScale3D(OriginalSide_Transform.GetScale3D().GetAbs());
 
 			if (bShouldSetPosition) Left_MirroredPositionKeys.Add(OriginalSide_Transform.GetTranslation());
@@ -166,8 +193,8 @@ bool MirrorHelpers::DoubleBoneMirror(UAnimSequence* SequenceToMirror, FDoubleBon
 	{
 		FTransform ReferencePoseTransform_Left = Skeleton.GetRefBonePose()[Skeleton.FindBoneIndex(FName(*TrackRules.LBoneName))];
 		ReferencePoseTransform_Left.Mirror(TrackRules.MirrorAxis, TrackRules.FlipAxis);
-		ReferencePoseTransform_Left.SetRotation(ReferencePoseTransform_Left.GetRotation() + TrackRules.RotationDifference.Quaternion());
-		ReferencePoseTransform_Left.NormalizeRotation();
+		//ReferencePoseTransform_Left.SetRotation(ReferencePoseTransform_Left.GetRotation() + TrackRules.RotationDifference.Quaternion());
+		//ReferencePoseTransform_Left.NormalizeRotation();
 		ReferencePoseTransform_Left.SetScale3D(ReferencePoseTransform_Left.GetScale3D().GetAbs());
 
 		Left_MirroredPositionKeys.Add(ReferencePoseTransform_Left.GetTranslation());
@@ -188,10 +215,24 @@ bool MirrorHelpers::DoubleBoneMirror(UAnimSequence* SequenceToMirror, FDoubleBon
 			if (bShouldSetPosition) OtherSide_Transform.SetTranslation(Right_RawTrack.PosKeys[FrameIteration]);
 			if (bShouldSetRotation) OtherSide_Transform.SetRotation(Right_RawTrack.RotKeys[FrameIteration]);
 			if (bShouldSetScale) OtherSide_Transform.SetScale3D(Right_RawTrack.ScaleKeys[FrameIteration]);
-
+			
+			UE_LOG(LogClass, Warning, TEXT("[L SIDE] Before mirror frame %i from bone %s with rotation %s."),
+			FrameIteration, *TrackRules.LBoneName, *OtherSide_Transform.Rotator().ToString());
+			
 			OtherSide_Transform.Mirror(TrackRules.MirrorAxis, TrackRules.FlipAxis);
-			OtherSide_Transform.SetRotation(OtherSide_Transform.GetRotation() + TrackRules.RotationDifference.Quaternion());
+
+			FRotator Temp_OtherSideRotator = OtherSide_Transform.Rotator();
+			Temp_OtherSideRotator.Roll += Reference_LMinusR.Roll;
+			Temp_OtherSideRotator.Pitch += Reference_LMinusR.Pitch;
+			Temp_OtherSideRotator.Yaw += Reference_LMinusR.Yaw;
+			OtherSide_Transform.SetRotation(Temp_OtherSideRotator.Quaternion());
 			OtherSide_Transform.NormalizeRotation();
+			
+			UE_LOG(LogClass, Warning, TEXT("[L SIDE] After mirror frame %i from bone %s with rotation %s."),
+			FrameIteration, *TrackRules.LBoneName, *OtherSide_Transform.Rotator().ToString());
+			
+			//OtherSide_Transform.SetRotation(OtherSide_Transform.GetRotation() + TrackRules.RotationDifference.Quaternion());
+			//OtherSide_Transform.NormalizeRotation();
 			OtherSide_Transform.SetScale3D(OtherSide_Transform.GetScale3D().GetAbs());
 
 			if (bShouldSetPosition) Right_MirroredPositionKeys.Add(OtherSide_Transform.GetTranslation());
@@ -203,8 +244,8 @@ bool MirrorHelpers::DoubleBoneMirror(UAnimSequence* SequenceToMirror, FDoubleBon
 	{
 		FTransform ReferencePoseTransform_Right = Skeleton.GetRefBonePose()[Skeleton.FindBoneIndex(FName(*TrackRules.RBoneName))];
 		ReferencePoseTransform_Right.Mirror(TrackRules.MirrorAxis, TrackRules.FlipAxis);
-		ReferencePoseTransform_Right.SetRotation(ReferencePoseTransform_Right.GetRotation() + TrackRules.RotationDifference.Quaternion());
-		ReferencePoseTransform_Right.NormalizeRotation();
+		//ReferencePoseTransform_Right.SetRotation(ReferencePoseTransform_Right.GetRotation() + TrackRules.RotationDifference.Quaternion());
+		//ReferencePoseTransform_Right.NormalizeRotation();
 		ReferencePoseTransform_Right.SetScale3D(ReferencePoseTransform_Right.GetScale3D().GetAbs());
 
 		Right_MirroredPositionKeys.Add(ReferencePoseTransform_Right.GetTranslation());
@@ -212,11 +253,11 @@ bool MirrorHelpers::DoubleBoneMirror(UAnimSequence* SequenceToMirror, FDoubleBon
 	}
 	
 
-	Left_Mirrored.PosKeys = TrackRules.bShouldMirrorTranslation ? Left_MirroredPositionKeys : Right_MirroredPositionKeys;
+	Left_Mirrored.PosKeys = TrackRules.bShouldMirrorTranslation ? Right_MirroredPositionKeys : Left_MirroredPositionKeys;
 	Left_Mirrored.RotKeys = Left_MirroredRotationKeys;
 	Left_Mirrored.ScaleKeys = Left_MirroredScaleKeys;
 
-	Right_Mirrored.PosKeys = TrackRules.bShouldMirrorTranslation ? Right_MirroredPositionKeys : Left_MirroredPositionKeys;
+	Right_Mirrored.PosKeys = TrackRules.bShouldMirrorTranslation ? Left_MirroredPositionKeys : Right_MirroredPositionKeys;
 	Right_Mirrored.RotKeys = Right_MirroredRotationKeys;
 	Right_Mirrored.ScaleKeys = Right_MirroredScaleKeys;
 
@@ -228,7 +269,7 @@ bool MirrorHelpers::SingleBoneMirror(UAnimSequence* SequenceToMirror, FSingleBon
 {
 	if (!SequenceToMirror || !SequenceToMirror->GetSkeleton()) return false;
 	const FReferenceSkeleton& Skeleton = SequenceToMirror->GetSkeleton()->GetReferenceSkeleton();
-	if (Skeleton.FindBoneIndex(FName(*TrackRules.BoneName))) return false;
+	if (Skeleton.FindBoneIndex(FName(*TrackRules.BoneName)) == -1) return false;
 	const int FrameNumber = SequenceToMirror->GetNumberOfFrames();
 	const TArray<FName> TrackNames = SequenceToMirror->GetAnimationTrackNames();
 	const int TrackIndex = TrackNames.IndexOfByKey(FName(*TrackRules.BoneName));
@@ -257,9 +298,9 @@ bool MirrorHelpers::SingleBoneMirror(UAnimSequence* SequenceToMirror, FSingleBon
 		if (bShouldSetScale) Mirror_Transform.SetScale3D(RawTrack.ScaleKeys[FrameIteration]);
 
 		Mirror_Transform.Mirror(TrackRules.MirrorAxis, TrackRules.FlipAxis);
-		Mirror_Transform.SetRotation(Mirror_Transform.GetRotation() + TrackRules.RotationDifference.Quaternion());
+		//Mirror_Transform.SetRotation(Mirror_Transform.GetRotation() + TrackRules.RotationDifference.Quaternion());
 		/* TALVEZ REMOVER NORMALIZACAO? */
-		Mirror_Transform.NormalizeRotation();
+		//Mirror_Transform.NormalizeRotation();
 		Mirror_Transform.SetScale3D(Mirror_Transform.GetScale3D().GetAbs());
 
 		if (bShouldSetPosition) MirroredPositionKeys.Add(Mirror_Transform.GetTranslation());
@@ -291,11 +332,17 @@ void MirrorHelpers::ProcessMirrorTrack(UAnimSequence* SequenceToMirror, const UM
 		FRawAnimSequenceTrack Left_Mirrored;
 		FRawAnimSequenceTrack Right_Mirrored;
 		DoubleBoneMirror(SequenceToMirror, DoubleBoneItem, Left_Mirrored, Right_Mirrored);
-		SequenceToMirror->AddNewRawTrack(FName(*DoubleBoneItem.LBoneName), &Left_Mirrored);
-		SequenceToMirror->AddNewRawTrack(FName(*DoubleBoneItem.RBoneName), &Right_Mirrored);
+		SequenceToMirror->AddNewRawTrack(FName(*DoubleBoneItem.RBoneName), &Left_Mirrored);
+		SequenceToMirror->AddNewRawTrack(FName(*DoubleBoneItem.LBoneName), &Right_Mirrored);
 	}
 
-	SequenceToMirror->PostProcessSequence();
+	//SequenceToMirror->PostProcessSequence();
+	SequenceToMirror->ClearBakedTransformData();
+	SequenceToMirror->RawCurveData.TransformCurves.Empty();
+	SequenceToMirror->bNeedsRebake = false;
+	SequenceToMirror->MarkRawDataAsModified();
+	SequenceToMirror->OnRawDataChanged();
+	SequenceToMirror->MarkPackageDirty();
 		
 		/*TArray<FName> TrackNames = AnimSequence->GetAnimationTrackNames();
 

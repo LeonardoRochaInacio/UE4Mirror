@@ -6,6 +6,8 @@
 #include "ObjectTools.h"
 #include "PropertyCustomizationHelpers.h"
 #include "AssetToolsModule.h"
+#include "AssetRegistryModule.h"
+#include "Toolkits/AssetEditorManager.h"
 
 const FAssetData* FMirrorMenuExtender::SelectedPoseData = nullptr;
 FAssetToolsModule* FMirrorMenuExtender::AssetTools = nullptr;
@@ -24,13 +26,15 @@ FReply FMirrorMenuExtender::MirrorMenuAction(const FAssetData SelectedAssets)
 			UAnimSequence* AnimSequence = Cast<UAnimSequence>(SelectedAssets.GetAsset());
 			if (PoseData && AnimSequence)
 			{
-				TSet<UPackage*> ReturnedPackage;
-				ObjectTools::FPackageGroupName PackageSettings;
-				PackageSettings.ObjectName = AnimSequence->GetName() + "_Mirror";
-				PackageSettings.PackageName = AnimSequence->GetOutermost()->GetPathName();
-
-				UObject* NewDuplicatedObject = AssetTools->Get().DuplicateAsset((SelectedAssets.AssetName).ToString() + "_Mirror", SelectedAssets.PackagePath.ToString(), AnimSequence);
-
+				FAssetToolsModule& AssetToolsModule = FModuleManager::Get().LoadModuleChecked<FAssetToolsModule>("AssetTools");
+				const FString Suffix = "_Mirror";
+				const FString AnimPath = AnimSequence->GetOutermost()->GetPathName();
+				FString Name;
+				FString PackageName;
+				
+				AssetToolsModule.Get().CreateUniqueAssetName(AnimPath, Suffix, PackageName, Name);
+				const FString PackagePath = FPackageName::GetLongPackagePath(PackageName);
+				UObject* NewDuplicatedObject = AssetTools->Get().DuplicateAsset(Name, PackagePath, AnimSequence);
 				UAnimSequence* NewAnimSequence = Cast<UAnimSequence>(NewDuplicatedObject);
 				MirrorHelpers::ProcessMirrorTrack(NewAnimSequence, PoseData);
 			}

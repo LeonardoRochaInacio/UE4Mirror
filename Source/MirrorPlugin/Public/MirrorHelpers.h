@@ -25,7 +25,7 @@ public:
 
 
 
-	
+	static FRotator GetPoseRotation_LR_Difference(FReferenceSkeleton& RefSkel, FString LBoneName, FString RBoneName);
 	static bool DoubleBoneMirror(UAnimSequence* SequenceToMirror, FDoubleBoneMirror TrackRules, FRawAnimSequenceTrack& Left_Mirrored, FRawAnimSequenceTrack& Right_Mirrored);
 	static bool SingleBoneMirror(UAnimSequence* SequenceToMirror, FSingleBoneMirror TrackRules, FRawAnimSequenceTrack& Mirrored);
 	static void ProcessMirrorTrack(UAnimSequence* SequenceToMirror, const UMirrorPoseData* DataPose);

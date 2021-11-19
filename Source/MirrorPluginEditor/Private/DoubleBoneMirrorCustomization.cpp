@@ -47,7 +47,6 @@ void FDoubleBoneMirrorCustomization::LOnSelection(TSharedPtr<FString> Option, ES
 	if (!Option.IsValid()) return;
 	StructHandle->GetChildHandle("LBoneName")->SetValue(*Option);
 	LCurrentSelectItem = Option;
-	Builder->GetParentCategory().GetParentLayout().ForceRefreshDetails();
 }
 
 void FDoubleBoneMirrorCustomization::ROnSelection(TSharedPtr<FString> Option, ESelectInfo::Type)
@@ -55,7 +54,6 @@ void FDoubleBoneMirrorCustomization::ROnSelection(TSharedPtr<FString> Option, ES
 	if (!Option.IsValid()) return;
 	StructHandle->GetChildHandle("RBoneName")->SetValue(*Option);
 	RCurrentSelectItem = Option;
-	Builder->GetParentCategory().GetParentLayout().ForceRefreshDetails();
 }
 
 FText FDoubleBoneMirrorCustomization::RGetCurrentItem() const
@@ -100,7 +98,7 @@ FReply FDoubleBoneMirrorCustomization::AxisOnClicked() const
 {
 	if (CurrentDoubleBoneStructure->MirrorAxis == EAxis::Z)
 	{
-		CurrentDoubleBoneStructure->MirrorAxis = EAxis::X;
+		CurrentDoubleBoneStructure->MirrorAxis = EAxis::None;
 	}
 	else
 	{
@@ -108,7 +106,7 @@ FReply FDoubleBoneMirrorCustomization::AxisOnClicked() const
 	}
 
 	AxisText->SetText(ConvertAxisFlipTypeToText(CurrentDoubleBoneStructure->MirrorAxis));
-
+	AxisText->SetColorAndOpacity(ConvertAxisFlipTypeToColor(CurrentDoubleBoneStructure->MirrorAxis));
 	return FReply::Handled();
 }
 
@@ -116,7 +114,7 @@ FReply FDoubleBoneMirrorCustomization::FlipOnClicked() const
 {
 	if (CurrentDoubleBoneStructure->FlipAxis == EAxis::Z)
 	{
-		CurrentDoubleBoneStructure->FlipAxis = EAxis::X;
+		CurrentDoubleBoneStructure->FlipAxis = EAxis::None;
 	}
 	else
 	{
@@ -124,8 +122,27 @@ FReply FDoubleBoneMirrorCustomization::FlipOnClicked() const
 	}
 
 	FlipText->SetText(ConvertAxisFlipTypeToText(CurrentDoubleBoneStructure->FlipAxis));
-
+	FlipText->SetColorAndOpacity(ConvertAxisFlipTypeToColor(CurrentDoubleBoneStructure->FlipAxis));
 	return FReply::Handled();
+}
+
+FLinearColor FDoubleBoneMirrorCustomization::ConvertAxisFlipTypeToColor(const EAxis::Type Type) const
+{
+	if (Type == EAxis::X)
+	{
+		return FLinearColor::Red;
+	}
+	else if (Type == EAxis::Y)
+	{
+		return FLinearColor::Green;
+	}
+	else if (Type == EAxis::Z)
+	{
+		return FLinearColor::Blue;
+	}
+	
+
+	return FLinearColor::Black;
 }
 
 FText FDoubleBoneMirrorCustomization::ConvertAxisFlipTypeToText(const EAxis::Type Type) const
@@ -142,8 +159,32 @@ FText FDoubleBoneMirrorCustomization::ConvertAxisFlipTypeToText(const EAxis::Typ
 	{
 		return FText::FromString("Z");
 	}
-
+	else if (Type == EAxis::None)
+	{
+		return FText::FromString("0");
+	}
+	
 	return FText::FromString("None - Error");
+}
+
+void FDoubleBoneMirrorCustomization::GenerateBoneOptionList(const FReferenceSkeleton RefSkeleton, const FString LCurrentBone, const FString RCurrentBone)
+{
+	for (int BoneIndex = 0; BoneIndex < RefSkeleton.GetNum(); BoneIndex++)
+	{
+		TSharedPtr<FString> Item = MakeShareable(new FString(RefSkeleton.GetBoneName(BoneIndex).ToString()));
+
+		if (RefSkeleton.GetBoneName(BoneIndex).ToString() == LCurrentBone)
+		{
+			LCurrentSelectItem = Item;
+		}
+
+		if (RefSkeleton.GetBoneName(BoneIndex).ToString() == RCurrentBone)
+		{
+			RCurrentSelectItem = Item;
+		}
+
+		Options.Add(Item);
+	}
 }
 
 void FDoubleBoneMirrorCustomization::CustomizeHeader(TSharedRef<class IPropertyHandle> StructPropertyHandle, class FDetailWidgetRow& HeaderRow, IPropertyTypeCustomizationUtils& StructCustomizationUtils)
@@ -175,36 +216,32 @@ void FDoubleBoneMirrorCustomization::CustomizeHeader(TSharedRef<class IPropertyH
 		return;
 	}
 
-	FString LCurrentSelectBone;
-	StructPropertyHandle->GetChildHandle("LBoneName")->GetValue(LCurrentSelectBone);
+	const FString LValueContentName = (!CurrentDoubleBoneStructure->LBoneName.IsEmpty() && TargetSkeleton->GetReferenceSkeleton().FindBoneIndex(*CurrentDoubleBoneStructure->LBoneName) != INDEX_NONE) ? CurrentDoubleBoneStructure->LBoneName : "None";
+	const FString RValueContentName = (!CurrentDoubleBoneStructure->RBoneName.IsEmpty() && TargetSkeleton->GetReferenceSkeleton().FindBoneIndex(*CurrentDoubleBoneStructure->RBoneName) != INDEX_NONE) ? CurrentDoubleBoneStructure->RBoneName : "None";
 
-	FString RCurrentSelectBone;
-	StructPropertyHandle->GetChildHandle("RBoneName")->GetValue(RCurrentSelectBone);
-
-	const FString LValueContentName = (!LCurrentSelectBone.IsEmpty() && TargetSkeleton->GetReferenceSkeleton().FindBoneIndex(*LCurrentSelectBone) != INDEX_NONE) ? LCurrentSelectBone : "None";
-	const FString RValueContentName = (!RCurrentSelectBone.IsEmpty() && TargetSkeleton->GetReferenceSkeleton().FindBoneIndex(*RCurrentSelectBone) != INDEX_NONE) ? RCurrentSelectBone : "None";
-
-	if (CurrentDoubleBoneStructure->MirrorAxis == 0 || CurrentDoubleBoneStructure->MirrorAxis > 3)
+	if (CurrentDoubleBoneStructure->MirrorAxis > 3)
 	{
 		CurrentDoubleBoneStructure->MirrorAxis = EAxis::X;
 	}
 
-	if (CurrentDoubleBoneStructure->FlipAxis == 0 || CurrentDoubleBoneStructure->FlipAxis > 3)
+	if (CurrentDoubleBoneStructure->FlipAxis > 3)
 	{
 		CurrentDoubleBoneStructure->FlipAxis = EAxis::X;
 	}
+
+	GenerateBoneOptionList(TargetSkeleton->GetReferenceSkeleton(), CurrentDoubleBoneStructure->LBoneName, CurrentDoubleBoneStructure->RBoneName);
 	
 	HeaderRow.NameContent()
 	[
 		SNew(STextBlock)
-		.Text(FText::FromString("Bone Settings"))
+		.Text(FText::FromString("Bone Setting"))
 	];
 
 	HeaderRow.ValueContent()
 	.MinDesiredWidth(250.0f)
 	[
 		SNew(SHorizontalBox)
-		+ SHorizontalBox::Slot()
+		/*+ SHorizontalBox::Slot()
 		.AutoWidth()
 		.VAlign(EVerticalAlignment::VAlign_Center)
 		[
@@ -216,6 +253,49 @@ void FDoubleBoneMirrorCustomization::CustomizeHeader(TSharedRef<class IPropertyH
 				.ColorAndOpacity(FSlateColor(FLinearColor(0.8f, 0.0f, 0.0f)))
 				.Margin(FMargin(5.0f, 0.0f, 0.0f, 0.0f))
 			]
+		]*/
+		+SHorizontalBox::Slot()
+		.AutoWidth()
+		[
+			SNew(SBox)
+			.MinDesiredWidth(200.0f)
+			[
+				SNew(SComboBox<TSharedPtr<FString>>)
+				.OptionsSource(&Options)
+				.OnGenerateWidget(this, &FDoubleBoneMirrorCustomization::MakeOption)
+				.OnSelectionChanged(this, &FDoubleBoneMirrorCustomization::LOnSelection)
+				.InitiallySelectedItem(LCurrentSelectItem)
+				[
+					SNew(STextBlock)
+					.Text(this, &FDoubleBoneMirrorCustomization::LGetCurrentItem)
+				]
+			]
+		]
+		+ SHorizontalBox::Slot()
+		.AutoWidth()
+		.VAlign(EVerticalAlignment::VAlign_Center)
+		[
+			SNew(STextBlock)
+			.Text(FText::FromString(" <---> "))
+			.TextStyle(&FCoreStyle::Get().GetWidgetStyle<FTextBlockStyle>("NormalText"))
+		]
+		+ SHorizontalBox::Slot()
+		.AutoWidth()
+		.Padding(FMargin(0.0f, 0.0f, 10.0f, 0.0f))
+		[
+			SNew(SBox)
+			.MinDesiredWidth(200.0f)
+			[
+				SNew(SComboBox<TSharedPtr<FString>>)
+				.OptionsSource(&Options)
+				.OnGenerateWidget(this, &FDoubleBoneMirrorCustomization::MakeOption)
+				.OnSelectionChanged(this, &FDoubleBoneMirrorCustomization::ROnSelection)
+				.InitiallySelectedItem(RCurrentSelectItem)
+				[
+					SNew(STextBlock)
+					.Text(this, &FDoubleBoneMirrorCustomization::RGetCurrentItem)
+				]
+			]
 		]
 		+ SHorizontalBox::Slot()
 		.AutoWidth()
@@ -223,16 +303,22 @@ void FDoubleBoneMirrorCustomization::CustomizeHeader(TSharedRef<class IPropertyH
 		[
 			SNew(STextBlock)
 			.Text(FText::FromString("Mirror Axis: "))
-			.ColorAndOpacity(FSlateColor(FLinearColor(0.5f, 0.0f, 0.0f)))
+			.TextStyle(&FCoreStyle::Get().GetWidgetStyle<FTextBlockStyle>("NormalText"))
 			.Margin(FMargin(5.0f, 0.0f, 0.0f, 0.0f))
 		]
 		+ SHorizontalBox::Slot()
 		.Padding(FMargin(0.0f, 0.0f, 10.0f, 0.0f))
 		.AutoWidth()
 		[
-			SNew(SButton).OnClicked_Raw(this, &FDoubleBoneMirrorCustomization::AxisOnClicked)
+			SNew(SButton)
+			.OnClicked_Raw(this, &FDoubleBoneMirrorCustomization::AxisOnClicked)
+			.ButtonStyle(&FCoreStyle::Get().GetWidgetStyle<FButtonStyle>("ToolBar.Button"))
 			[
-				SAssignNew(AxisText, STextBlock).Text(ConvertAxisFlipTypeToText(CurrentDoubleBoneStructure->MirrorAxis))
+				SAssignNew(AxisText, STextBlock)
+				.Text(ConvertAxisFlipTypeToText(CurrentDoubleBoneStructure->MirrorAxis))
+				.ColorAndOpacity(ConvertAxisFlipTypeToColor(CurrentDoubleBoneStructure->MirrorAxis))
+				.ShadowColorAndOpacity(FLinearColor::Black)
+				.ShadowOffset(FIntPoint(-1, 1))
 			]
 		]
 		+ SHorizontalBox::Slot()
@@ -241,16 +327,22 @@ void FDoubleBoneMirrorCustomization::CustomizeHeader(TSharedRef<class IPropertyH
 		[
 			SNew(STextBlock)
 			.Text(FText::FromString("Flip Axis: "))
-			.ColorAndOpacity(FSlateColor(FLinearColor(0.5f, 0.0f, 0.0f)))
+			.TextStyle(&FCoreStyle::Get().GetWidgetStyle<FTextBlockStyle>("NormalText"))
 			.Margin(FMargin(5.0f, 0.0f, 0.0f, 0.0f))
 		]
 		+ SHorizontalBox::Slot()
 		.Padding(FMargin(0.0f, 0.0f, 10.0f, 0.0f))
 		.AutoWidth()
 		[
-			SNew(SButton).OnClicked_Raw(this, &FDoubleBoneMirrorCustomization::FlipOnClicked)
+			SNew(SButton)
+			.OnClicked_Raw(this, &FDoubleBoneMirrorCustomization::FlipOnClicked)
+			.ButtonStyle(&FCoreStyle::Get().GetWidgetStyle<FButtonStyle>("ToolBar.Button"))
 			[
-				SAssignNew(FlipText, STextBlock).Text(ConvertAxisFlipTypeToText(CurrentDoubleBoneStructure->FlipAxis))
+				SAssignNew(FlipText, STextBlock)
+				.Text(ConvertAxisFlipTypeToText(CurrentDoubleBoneStructure->FlipAxis))
+				.ColorAndOpacity(ConvertAxisFlipTypeToColor(CurrentDoubleBoneStructure->FlipAxis))
+				.ShadowColorAndOpacity(FLinearColor::Black)
+				.ShadowOffset(FIntPoint(-1, 1))
 			]
 		]	
 	];
