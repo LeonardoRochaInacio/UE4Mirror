@@ -253,11 +253,11 @@ bool MirrorHelpers::DoubleBoneMirror(UAnimSequence* SequenceToMirror, FDoubleBon
 	}
 	
 
-	Left_Mirrored.PosKeys = TrackRules.bShouldMirrorTranslation ? Right_MirroredPositionKeys : Left_MirroredPositionKeys;
+	Left_Mirrored.PosKeys = TrackRules.bShouldMirrorTranslation ? Left_MirroredPositionKeys : Right_MirroredPositionKeys;
 	Left_Mirrored.RotKeys = Left_MirroredRotationKeys;
 	Left_Mirrored.ScaleKeys = Left_MirroredScaleKeys;
 
-	Right_Mirrored.PosKeys = TrackRules.bShouldMirrorTranslation ? Left_MirroredPositionKeys : Right_MirroredPositionKeys;
+	Right_Mirrored.PosKeys = TrackRules.bShouldMirrorTranslation ? Right_MirroredPositionKeys : Left_MirroredPositionKeys;
 	Right_Mirrored.RotKeys = Right_MirroredRotationKeys;
 	Right_Mirrored.ScaleKeys = Right_MirroredScaleKeys;
 
