@@ -195,12 +195,12 @@ void FSingleBoneMirrorCustomization::CustomizeHeader(TSharedRef<class IPropertyH
 		TargetSkeleton->GetReferenceSkeleton().FindBoneIndex(*CurrentSingleBoneStructure->BoneName) != INDEX_NONE)
 		? CurrentSingleBoneStructure->BoneName : "None";
 
-	if(CurrentSingleBoneStructure->MirrorAxis == 0 || CurrentSingleBoneStructure->MirrorAxis > 3)
+	if(CurrentSingleBoneStructure->MirrorAxis > 3)
 	{
 		CurrentSingleBoneStructure->MirrorAxis = EAxis::X;
 	}
 
-	if (CurrentSingleBoneStructure->FlipAxis == 0 || CurrentSingleBoneStructure->FlipAxis > 3)
+	if (CurrentSingleBoneStructure->FlipAxis > 3)
 	{
 		CurrentSingleBoneStructure->FlipAxis = EAxis::X;
 	}

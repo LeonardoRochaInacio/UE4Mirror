@@ -187,6 +187,18 @@ void FDoubleBoneMirrorCustomization::GenerateBoneOptionList(const FReferenceSkel
 	}
 }
 
+void FDoubleBoneMirrorCustomization::OnShouldMirrorChanged(const ECheckBoxState State)
+{
+	if(State == ECheckBoxState::Checked)
+	{
+		if (CurrentDoubleBoneStructure) CurrentDoubleBoneStructure->bShouldMirrorTranslation = true;
+	}
+	else
+	{
+		if (CurrentDoubleBoneStructure) CurrentDoubleBoneStructure->bShouldMirrorTranslation = false;
+	}
+}
+
 void FDoubleBoneMirrorCustomization::CustomizeHeader(TSharedRef<class IPropertyHandle> StructPropertyHandle, class FDetailWidgetRow& HeaderRow, IPropertyTypeCustomizationUtils& StructCustomizationUtils)
 {
 	StructHandle = StructPropertyHandle;
@@ -344,7 +356,25 @@ void FDoubleBoneMirrorCustomization::CustomizeHeader(TSharedRef<class IPropertyH
 				.ShadowColorAndOpacity(FLinearColor::Black)
 				.ShadowOffset(FIntPoint(-1, 1))
 			]
-		]	
+		]
+		+ SHorizontalBox::Slot()
+		.AutoWidth()
+		.VAlign(EVerticalAlignment::VAlign_Center)
+		[
+			SNew(STextBlock)
+			.TextStyle(&FCoreStyle::Get().GetWidgetStyle<FTextBlockStyle>("NormalText"))
+			.Text(FText::FromString("Mirror position: "))
+			.Margin(FMargin(5.0f, 0.0f, 0.0f, 0.0f))
+		]
+		+ SHorizontalBox::Slot()
+		.AutoWidth()
+		.VAlign(EVerticalAlignment::VAlign_Center)
+		[
+			SNew(SCheckBox)
+			.IsChecked((CurrentDoubleBoneStructure->bShouldMirrorTranslation) ? ECheckBoxState::Checked : ECheckBoxState::Unchecked)
+			.OnCheckStateChanged_Raw(this, &FDoubleBoneMirrorCustomization::OnShouldMirrorChanged)
+			//.Style(&FCoreStyle::Get().GetWidgetStyle<FCheckBoxStyle>("ToolBar.Checkbox"))
+		]
 	];
 }
 

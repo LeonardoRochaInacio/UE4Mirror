@@ -25,6 +25,9 @@ private:
 
 	void GenerateBoneOptionList(const FReferenceSkeleton RefSkeleton, const FString LCurrentBone, const FString RCurrentBone);
 
+	void OnShouldMirrorChanged(const ECheckBoxState State);
+	
+
 private:
 
 	TArray<TSharedPtr<FString>> Options;

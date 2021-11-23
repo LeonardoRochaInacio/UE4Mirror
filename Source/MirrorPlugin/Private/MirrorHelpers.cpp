@@ -284,7 +284,7 @@ bool MirrorHelpers::SingleBoneMirror(UAnimSequence* SequenceToMirror, FSingleBon
 	MirroredScaleKeys.Reserve(FrameNumber);
 
 	FRawAnimSequenceTrack RawTrack = SequenceToMirror->GetRawAnimationData()[TrackIndex];
-
+	
 	for (int FrameIteration = 0; FrameIteration < FrameNumber; FrameIteration++)
 	{
 		const bool bShouldSetPosition = RawTrack.PosKeys.IsValidIndex(FrameIteration);
