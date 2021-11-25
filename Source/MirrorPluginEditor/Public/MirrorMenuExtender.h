@@ -2,7 +2,7 @@
 
 class FAssetToolsModule;
 
-class FMirrorMenuExtender final
+class MIRRORPLUGINEDITOR_API FMirrorMenuExtender final
 {
 	
 public:

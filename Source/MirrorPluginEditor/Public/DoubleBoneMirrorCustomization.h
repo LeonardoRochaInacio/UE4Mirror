@@ -4,12 +4,10 @@
 #include "Runtime/SlateCore/Public/Widgets/SWidget.h"
 #include "AnimGraphNode_MirrorPose.h"
 
-class FDoubleBoneMirrorCustomization : public IPropertyTypeCustomization
+class MIRRORPLUGINEDITOR_API FDoubleBoneMirrorCustomization : public IPropertyTypeCustomization
 {
 
 private:
-
-	TSharedRef<SWidget> BoolWidget(TSharedRef<SWidget> BoolProperty, FString Text) const;
 
 	TSharedRef<SWidget> MakeOption(TSharedPtr<FString> Option) const;
 

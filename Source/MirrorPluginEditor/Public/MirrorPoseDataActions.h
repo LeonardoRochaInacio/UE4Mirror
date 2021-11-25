@@ -3,7 +3,7 @@
 
 #include "AssetTypeActions_Base.h"
 
-class FMirrorPoseDataActions : public FAssetTypeActions_Base
+class MIRRORPLUGINEDITOR_API FMirrorPoseDataActions : public FAssetTypeActions_Base
 {
 public:
 	

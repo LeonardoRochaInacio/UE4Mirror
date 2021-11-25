@@ -7,12 +7,10 @@
 class UMirrorPoseData;
 class USkeleton;
 
-class FSingleBoneMirrorCustomization : public IPropertyTypeCustomization
+class MIRRORPLUGINEDITOR_API FSingleBoneMirrorCustomization : public IPropertyTypeCustomization
 {
 
 private:
-
-	TSharedRef<SWidget> BoolWidget(const TSharedRef<SWidget> BoolProperty, const FString Text) const;
 
 	TSharedRef<SWidget> MakeOption(const TSharedPtr<FString> Option) const;
 
@@ -47,6 +45,8 @@ private:
 	TSharedPtr<STextBlock> FlipText;
 
 	struct FSingleBoneMirror* CurrentSingleBoneStructure = nullptr;
+
+	UMirrorPoseData* OuterInstance_Internal;
 	
 public:
 

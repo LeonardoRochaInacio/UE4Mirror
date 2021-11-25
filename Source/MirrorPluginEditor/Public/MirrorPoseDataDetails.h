@@ -7,7 +7,7 @@
 
 
 
-class FMirrorPoseDataDetails final : public IDetailCustomization
+class MIRRORPLUGINEDITOR_API FMirrorPoseDataDetails final : public IDetailCustomization
 {
 public:
 
