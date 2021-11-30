@@ -46,6 +46,7 @@ bool FSingleBoneMirrorCustomization::CheckSkeletonSelected(UMirrorPoseData*& Out
 	TArray<UObject*> OuterObjects;
 	StructHandle->GetOuterObjects(OuterObjects);
 	OuterInstance = Cast<UMirrorPoseData>(OuterObjects[0]);
+	
 
 	if (OuterInstance)
 	{
@@ -139,12 +140,7 @@ void FSingleBoneMirrorCustomization::GenerateBoneOptionList(const FReferenceSkel
 			CurrentSelectItem = Item;
 		}
 
-		/*FSingleBoneMirror* Contains = OuterInstance_Internal->SingleBones.FindByPredicate([&](FSingleBoneMirror &S)
-		{
-			return (Item->Compare(S.BoneName) == 0);
-		});*/
-		
-		/*if(OuterInstance_Internal && !Contains) */Options.Add(Item);
+		Options.Add(Item);
 	}
 }
 
