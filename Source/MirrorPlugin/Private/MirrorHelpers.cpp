@@ -170,12 +170,14 @@ bool MirrorHelpers::DoubleBoneMirror(UAnimSequence* SequenceToMirror, FDoubleBon
 
 			OriginalSide_Transform.Mirror(TrackRules.MirrorAxis, TrackRules.FlipAxis);
 
-			FRotator Temp_OriginalSideRotator = OriginalSide_Transform.Rotator();
+			/* Adicionar como opção */
+			
+			/*FRotator Temp_OriginalSideRotator = OriginalSide_Transform.Rotator();
 			Temp_OriginalSideRotator.Roll += Reference_RMinusL.Roll;
 			Temp_OriginalSideRotator.Pitch += Reference_RMinusL.Pitch;
 			Temp_OriginalSideRotator.Yaw += Reference_RMinusL.Yaw;
 			OriginalSide_Transform.SetRotation(Temp_OriginalSideRotator.Quaternion());
-			OriginalSide_Transform.NormalizeRotation();
+			OriginalSide_Transform.NormalizeRotation();*/
 			
 			UE_LOG(LogClass, Warning, TEXT("[R SIDE] After mirror frame %i from bone %s with rotation %s."),
 			FrameIteration, *TrackRules.LBoneName, *OriginalSide_Transform.Rotator().ToString());
@@ -221,12 +223,14 @@ bool MirrorHelpers::DoubleBoneMirror(UAnimSequence* SequenceToMirror, FDoubleBon
 			
 			OtherSide_Transform.Mirror(TrackRules.MirrorAxis, TrackRules.FlipAxis);
 
-			FRotator Temp_OtherSideRotator = OtherSide_Transform.Rotator();
+			/* Adicionar como opção */
+			
+			/*FRotator Temp_OtherSideRotator = OtherSide_Transform.Rotator();
 			Temp_OtherSideRotator.Roll += Reference_LMinusR.Roll;
 			Temp_OtherSideRotator.Pitch += Reference_LMinusR.Pitch;
 			Temp_OtherSideRotator.Yaw += Reference_LMinusR.Yaw;
 			OtherSide_Transform.SetRotation(Temp_OtherSideRotator.Quaternion());
-			OtherSide_Transform.NormalizeRotation();
+			OtherSide_Transform.NormalizeRotation();*/
 			
 			UE_LOG(LogClass, Warning, TEXT("[L SIDE] After mirror frame %i from bone %s with rotation %s."),
 			FrameIteration, *TrackRules.LBoneName, *OtherSide_Transform.Rotator().ToString());
